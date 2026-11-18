@@ -1107,6 +1107,12 @@ body{margin:0;background:#07070B}
 .om-seg-l{overflow:hidden;text-overflow:ellipsis}
 @media (max-width:360px){.om-train-head .h1{font-size:32px}.om-train-head .sub{font-size:14px;max-width:66%}.om-train-art{width:62%}
   .om-root .om-dtabs.om-seg3{gap:2px;padding:4px;grid-template-columns:repeat(3,minmax(0,1fr)) 44px}.om-root .om-dtabs.om-seg3 button{font-size:13px;padding:0 3px}}
+/* ---- v31: NOVA quota line (same type scale as the status pills) ---- */
+.om-nquota{flex-shrink:0;display:flex;justify-content:space-between;gap:12px;padding:0 20px 8px;font-size:12px;font-weight:700;color:var(--tx2);font-variant-numeric:tabular-nums}
+.om-nquota span:first-child{color:var(--tx)}
+.om-root .srow.om-go{cursor:pointer}
+.om-nquota span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.om-pack-cv{font-size:12.5px;font-weight:700;color:var(--tx2)}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1945,16 +1951,18 @@ body{margin:0;background:#07070B}
 </sc-if>
 <sc-if value="{{nv.hasErr}}" hint-placeholder-val="{{false}}"><div class="om-nnote err om-fade-in" role="alert"><span>{{nv.errText}}</span><button class="om-tap chip" onClick="{{nv.retry}}">{{nv.retryL}}</button></div></sc-if>
 <sc-if value="{{nv.demo}}" hint-placeholder-val="{{false}}"><div class="om-nnote demo om-fade-in" role="status"><span>{{nv.demoBanner}}</span><button class="om-tap chip" onClick="{{nv.retryLive}}">{{nv.retryLiveL}}</button></div></sc-if>
+<sc-if value="{{nq.block}}" hint-placeholder-val="{{false}}"><div class="om-nnote demo om-fade-in" role="status"><span>{{nq.blockT}}</span><button class="om-tap chip" onClick="{{nq.blockGo}}">{{nq.blockL}}</button></div></sc-if>
+<sc-if value="{{nq.on}}" hint-placeholder-val="{{false}}"><div class="om-nquota" role="status" aria-live="polite"><span>{{nq.msgL}}</span><span>{{nq.convL}}</span></div></sc-if>
 <div class="om-nbar">
 <button class="om-tap ib" onClick="{{startVoice}}" aria-label="{{T.micOn}}" style="width: 50px; height: 50px; color: var(--accT)"><svg class="om-i" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0M12 18v3"></path></svg></button>
 <label class="sr" for="om-chat">{{T.typeMsg}}</label>
-<input id="om-chat" class="inp" value="{{chatInput}}" onChange="{{onChatInput}}" onKeyDown="{{onChatKey}}" onFocus="{{nv.onFocus}}" onBlur="{{nv.onBlur}}" placeholder="{{T.typeMsg}}" autocomplete="off" enterkeyhint="send" style="height: 50px; flex-grow: 1; min-width: 0">
+<input id="om-chat" class="inp" value="{{chatInput}}" onChange="{{onChatInput}}" onKeyDown="{{onChatKey}}" onFocus="{{nv.onFocus}}" onBlur="{{nv.onBlur}}" placeholder="{{nq.ph}}" autocomplete="off" enterkeyhint="send" style="height: 50px; flex-grow: 1; min-width: 0">
 <sc-if value="{{nv.canSend}}" hint-placeholder-val="{{true}}"><button class="om-tap om-nsend" onClick="{{sendChat}}" disabled="{{nv.sendOff}}" aria-label="{{T.send}}"><svg class="om-i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"></path><path d="m22 2-7 20-4-9-9-4z"></path></svg></button></sc-if>
 <sc-if value="{{nv.canStop}}" hint-placeholder-val="{{false}}"><button class="om-tap om-nsend" onClick="{{nv.stop}}" aria-label="{{nv.stopL}}"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg></button></sc-if>
 </div>
 <sc-if value="{{voiceOn}}" hint-placeholder-val="{{false}}">
 <div role="dialog" aria-modal="true" aria-label="{{T.voiceMode}}" class="om-enter" style="position: absolute; inset: 0; z-index: 5; background: radial-gradient(70% 45% at 50% 40%, rgba(124,92,255,.35) 0%, rgba(7,7,11,0) 70%), linear-gradient(180deg, #22104A 0%, #130829 55%, #0C0520 100%); color: #F4F4F8; display: flex; flex-direction: column; align-items: center; padding: 28px 24px 22px; gap: 18px">
-<span style="font-size: 12px; font-weight: 800; letter-spacing: .16em; color: #A3A3B5">NOVA · {{T.voiceMode}}</span>
+<span style="font-size: 12px; font-weight: 800; letter-spacing: .16em; color: #A3A3B5">NOVA · {{T.voiceMode}}{{nq.vSuffix}}</span>
 <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; width: 100%">
 <div aria-hidden="true" class="om-vorb om-iorb {{nv.state}}"><span class="om-orbimg"></span><i></i></div>
 <span aria-live="polite" style="min-height: 48px; font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 600; text-align: center; text-wrap: balance">{{nv.vLabel}}</span>
@@ -2108,7 +2116,7 @@ body{margin:0;background:#07070B}
 <sc-for list="{{hi.items}}" as="r" hint-placeholder-count="6">
 <sc-if value="{{r.isHead}}" hint-placeholder-val="{{false}}"><h2 class="om-hi-head">{{r.head}}</h2></sc-if>
 <sc-if value="{{r.isRow}}" hint-placeholder-val="{{true}}">
-<div class="srow" style="border-bottom: 1px solid {{r.line}}; align-items: flex-start">
+<div class="srow {{r.goCls}}" onClick="{{r.go}}" onKeyDown="{{r.goKey}}" role="{{r.role}}" tabindex="{{r.tab}}" style="border-bottom: 1px solid {{r.line}}; align-items: flex-start">
 <span aria-hidden="true" class="ico" style="width: 42px; height: 42px; border-radius: 50%; background: {{r.bg}}"><svg class="om-i" width="20" height="20" viewBox="0 0 24 24"><path d="{{r.ic}}"></path></svg></span>
 <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px; min-width: 0"><span style="font-size: 14px; font-weight: 800">{{r.title}}</span><span style="font-size: 12px; font-weight: 600; color: var(--tx2); line-height: 1.4">{{r.meta}}</span><sc-if value="{{r.hasBA}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; font-weight: 800; color: var(--tx)">{{r.ba}}</span></sc-if></span>
 <span style="font-size: 12px; font-weight: 700; color: var(--tx3); white-space: nowrap; font-variant-numeric: tabular-nums">{{r.when}}</span>
@@ -2157,9 +2165,8 @@ body{margin:0;background:#07070B}
 <section class="om-wallet" aria-labelledby="om-wallet-t">
 <span aria-hidden="true" class="om-wallet-orb"><span class="om-iorb ready"><span class="om-orbimg"></span></span></span>
 <div class="om-wallet-top"><span id="om-wallet-t" class="om-wallet-l"><svg class="om-i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2-2h11v4M4 7v11a2 2 0 0 0 2 2h14V9H6a2 2 0 0 1-2-2zM16 14h.01"></path></svg>{{T.walletT}}</span></div>
-<span class="om-wallet-plan">{{wallet.plan}}</span>
 <div class="om-wallet-bal"><span class="om-wallet-n">{{wallet.credits}}</span><span class="om-wallet-u">{{wallet.creditsL}}</span></div>
-<span class="om-wallet-sub">{{T.creditsFor}}</span>
+<span class="om-wallet-sub">{{wallet.sub}}</span>
 <button class="om-tap om-wallet-cta" onClick="{{wallet.toPacks}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><path d="M12 5v14M5 12h14"></path></svg>{{T.topUp}}</button>
 </section>
 
@@ -2172,25 +2179,13 @@ body{margin:0;background:#07070B}
 <div class="om-pack {{p.cls}}">
 <sc-if value="{{p.hasTag}}" hint-placeholder-val="{{false}}"><span class="om-pack-tag">{{p.tag}}</span></sc-if>
 <span aria-hidden="true" class="om-pack-ic {{p.icCls}}"><svg class="om-i" width="24" height="24" viewBox="0 0 24 24"><path d="{{p.ic}}"></path></svg></span>
-<span class="om-pack-tx"><span class="om-pack-n">{{p.name}}</span><span class="om-pack-c"><b>{{p.credits}}</b> {{T.credits}}</span><sc-if value="{{p.hasSave}}" hint-placeholder-val="{{false}}"><span class="om-pack-save">{{p.save}}</span></sc-if></span>
+<span class="om-pack-tx"><span class="om-pack-n">{{p.name}}</span><span class="om-pack-c"><b>{{p.credits}}</b> {{T.credits}}</span><span class="om-pack-cv">{{p.convs}}</span><sc-if value="{{p.hasSave}}" hint-placeholder-val="{{false}}"><span class="om-pack-save">{{p.save}}</span></sc-if></span>
 <button class="om-tap om-pack-buy" onClick="{{p.buy}}" aria-label="{{p.aria}}">{{p.price}}</button>
 </div>
 </sc-for>
 </div>
 </section>
 
-<section class="om-pro" aria-labelledby="om-pro-t">
-<div class="om-pro-top"><span aria-hidden="true" class="om-pro-ic"><svg class="om-i" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"></path></svg></span><span><h2 id="om-pro-t" class="om-pro-t">OFFMind <b>Pro</b></h2><span class="om-pro-sub">{{T.proSub}}</span></span></div>
-<div class="om-bill" role="group" aria-label="{{T.proT}}">
-<sc-for list="{{shop.billTabs}}" as="b" hint-placeholder-count="2"><button class="om-tap" onClick="{{b.pick}}" aria-pressed="{{b.on}}">{{b.l}}<sc-if value="{{b.hasExtra}}" hint-placeholder-val="{{false}}"><span class="om-pro-off">{{b.extra}}</span></sc-if></button></sc-for>
-</div>
-<div class="om-pro-price"><span class="om-pro-p">{{shop.proPrice}}</span><span class="om-pro-per">{{shop.proPer}}</span></div>
-<sc-if value="{{shop.hasEq}}" hint-placeholder-val="{{true}}"><span class="om-pro-eq">{{shop.proEq}}</span></sc-if>
-<ul class="om-pro-perks">
-<sc-for list="{{shop.perks}}" as="k" hint-placeholder-count="4"><li><span aria-hidden="true" class="om-pro-ck"><svg class="om-i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 3"><path d="m5 12 5 5 9-10"></path></svg></span>{{k.l}}</li></sc-for>
-</ul>
-<button class="om-tap om-pro-cta" onClick="{{shop.goPro}}"><svg class="om-i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"></path></svg>{{T.goPro}}</button>
-</section>
 
 <div class="om-shop-links">
 <button class="om-tap btn-s" onClick="{{shop.toPurchases}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6M9 16h3"></path></svg>{{T.myPurchases}}</button>
@@ -6491,19 +6486,17 @@ var SHOP = {
     { id: 'starter', credits: 100, price: 2.99 },
     { id: 'gamer', credits: 300, price: 6.99, tag: 'popular' },
     { id: 'elite', credits: 750, price: 14.99, tag: 'best' }
-  ],
-  pro: { monthly: 6.99, yearly: 49.99, perks: ['advanced', 'deepStats', 'routines', 'credits'] }
+  ]
 };
 
 var Wallet = {
-  empty: function () { return { credits: 0, pro: null, purchases: [] }; },
+  empty: function () { return { credits: 0, purchases: [] }; },
   /* the only way credits or Pro change: a server-verified receipt { verified, id, kind: 'pack'|'pro', packId?, plan?, credits?, at, amount } */
   applyVerified: function (w, r) {
     if (!r || r.verified !== true || !r.id) return w;
     if (w.purchases.some(function (p) { return p.id === r.id; })) return w;
-    var n = { credits: w.credits, pro: w.pro, purchases: w.purchases.concat([r]) };
+    var n = { credits: w.credits, purchases: w.purchases.concat([r]) };
     if (r.kind === 'pack') n.credits += r.credits || 0;
-    if (r.kind === 'pro') n.pro = { plan: r.plan, since: r.at };
     return n;
   }
 };
@@ -6554,7 +6547,6 @@ Object.keys(SHOP_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || 
   /* purchase entry points: with payments off they only explain; with a provider they must start its checkout
      and wait for a verified receipt (Wallet.applyVerified) before anything changes */
   P.shopBuy = function (pack) { if (!SHOP.payments.enabled) return this.shopOpen('pack', pack); this.shopOpen('pack', pack); };
-  P.shopGoPro = function (plan) { if (!SHOP.payments.enabled) return this.shopOpen('pro', plan); this.shopOpen('pro', plan); };
   P.shopRestore = function () { this.shopOpen('restore'); };
 
   P.componentDidMount = function () {
@@ -6582,10 +6574,8 @@ Object.keys(SHOP_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || 
     /* wallet + shop view */
     var unit = SHOP.packs[0].price / SHOP.packs[0].credits;
     var packName = function (p) { return T['pack' + p.id.charAt(0).toUpperCase() + p.id.slice(1)]; };
-    var bill = s.shopBill === 'monthly' ? 'monthly' : 'yearly';
-    var yearSave = Math.round((1 - SHOP.pro.yearly / (SHOP.pro.monthly * 12)) * 100);
     v.wallet = {
-      credits: String(w.credits), creditsL: T.credits, plan: w.pro ? T.planPro : T.planFree, isPro: !!w.pro,
+      credits: String(w.credits), creditsL: T.credits,
       payOff: !SHOP.payments.enabled,
       toPacks: function () { var el = document.getElementById('om-packs'); if (el) el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); },
       novaAria: fill(T.novaCredits, { n: w.credits }), toShop: function () { self.tab('shop'); }
@@ -6598,14 +6588,8 @@ Object.keys(SHOP_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || 
           save: save > 0 ? fill(T.save, { n: save }) : '', hasSave: save > 0,
           aria: fill(T.buyPack, { p: nm, c: p.credits, price: price }), buy: function () { self.shopBuy(p); } };
       }),
-      billTabs: [['monthly', T.monthly], ['yearly', T.yearly]].map(function (b) {
-        return { key: b[0], l: b[1], on: bill === b[0], extra: b[0] === 'yearly' ? '−' + yearSave + '%' : '', hasExtra: b[0] === 'yearly', pick: function () { self.setState({ shopBill: b[0] }); } };
-      }),
-      proPrice: money(bill === 'monthly' ? SHOP.pro.monthly : SHOP.pro.yearly, lang), proPer: bill === 'monthly' ? T.perMonth : T.perYear,
-      proEq: bill === 'yearly' ? fill(T.yearlyEq, { m: money(Math.round(SHOP.pro.yearly / 12 * 100) / 100, lang) }) : '', hasEq: bill === 'yearly',
-      perks: SHOP.pro.perks.map(function (k) { return { key: k, l: T['perk' + k.charAt(0).toUpperCase() + k.slice(1)] }; }),
-      goPro: function () { self.shopGoPro(bill); }, toPurchases: function () { self.push('purchases'); }, restore: function () { self.shopRestore(); },
-      purchases: w.purchases.map(function (p) { return { key: p.id, l: p.kind === 'pro' ? 'OFFMind Pro' : (p.credits + ' ' + T.credits), d: new Date(p.at).toLocaleDateString(SPEECH_LANG[lang] || 'en-US'), amt: money(p.amount || 0, lang) }; }),
+      toPurchases: function () { self.push('purchases'); }, restore: function () { self.shopRestore(); },
+      purchases: w.purchases.map(function (p) { return { key: p.id, l: p.credits + ' ' + T.credits, d: new Date(p.at).toLocaleDateString(SPEECH_LANG[lang] || 'en-US'), amt: money(p.amount || 0, lang) }; }),
       none: !w.purchases.length
     };
     v.shop.has = !v.shop.none;
@@ -6614,7 +6598,6 @@ Object.keys(SHOP_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || 
     if (s.shopModal) {
       var m = s.shopModal, it = m.item, body;
       if (m.kind === 'pack') body = fill(T.naPack, { p: packName(it), c: it.credits, price: money(it.price, lang) });
-      else if (m.kind === 'pro') body = fill(T.naPro, { plan: (it === 'monthly' ? T.monthly : T.yearly).toLowerCase(), price: money(it === 'monthly' ? SHOP.pro.monthly : SHOP.pro.yearly, lang) + (it === 'monthly' ? T.perMonth : T.perYear) });
       v.hasModal = true;
       v.modal = { t: m.kind === 'restore' ? T.restoreT : T.naT, b: m.kind === 'restore' ? T.restoreB : body, c: T.gotIt, needsType: false, blocked: false, single: true,
         cBg: 'linear-gradient(120deg, var(--accM), var(--acc) 55%, var(--acc2))', cC: '#FFFFFF' };
@@ -6898,7 +6881,7 @@ function acMakeBackend() {
   function wrap(p, map) { return p.then(function (r) { return Object.assign({ error: E(r.error) }, map ? map(r.data) : {}); }, function (e) { return { error: E(e) }; }); }
   var PF_MAP = { username: 'username', first: 'first_name', last: 'last_name', birth: 'birth_date', country: 'country', game: 'main_game', rank: 'rank', role: 'role', type: 'player_type', goals: 'goals' };
   return {
-    kind: 'supabase',
+    kind: 'supabase', client: sb,
     hasStoredSession: function () { try { return !!localStorage.getItem(STORE); } catch (e) { return false; } },
     onAuth: function (cb) { sb.auth.onAuthStateChange(function (ev, session) { setTimeout(function () { cb(ev, session ? session.user : null); }, 0); }); },
     getUser: function () { return wrap(sb.auth.getSession(), function (d) { return { user: d && d.session ? d.session.user : null }; }); },
@@ -7588,6 +7571,442 @@ var SUP30_TXT = {
   zh: { supMail: '联系支持' }, ja: { supMail: 'サポートに連絡' }, ko: { supMail: '고객 지원 문의' }
 };
 Object.keys(SUP30_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, SUP30_TXT[l]); });
+
+
+/* ---------- v31 · NOVA tokens: Shop ⇄ NOVA ---------- */
+var NQ = { COST: 30, LIMIT: 20, PRODUCTS: { starter: 'offmind.nova.starter', gamer: 'offmind.nova.gamer', elite: 'offmind.nova.elite' } };
+SHOP.packs = [
+  { id: 'starter', credits: 100, convs: 3, price: 2.99 },
+  { id: 'gamer', credits: 300, convs: 10, price: 6.99, tag: 'popular' },
+  { id: 'elite', credits: 750, convs: 25, price: 14.99, tag: 'best' }
+];
+
+var NQ_TXT = {
+  it: { shopSub: 'Token per parlare con NOVA', credits: 'token', packsT: 'Pacchetti token', nqPackConvs: '{n} conversazioni',
+    buyPack: 'Acquista {p}: {c} token, {price}', novaCredits: '{n} token NOVA · apri lo Shop',
+    nqWalletSub: '{n} conversazioni · 30 token l’una', nqWalletSub1: '1 conversazione · 30 token l’una', nqWalletSub0: '0 conversazioni · 30 token l’una',
+    payNaT: 'Acquisti dall’app per iPhone e Android', payNaB: 'I token si acquistano nell’app OFFMind tramite App Store o Google Play. Sul web non puoi acquistare: nessun addebito e nessun token aggiunto.',
+    naT: 'Acquisto non disponibile qui', naPack: 'Hai scelto {p} · {c} token · {price}. Puoi acquistarlo dall’app OFFMind per iPhone o Android. Da qui non viene addebitato nulla e il saldo non cambia.',
+    nqLoginBuyT: 'Accedi per acquistare', nqLoginBuyB: 'Token e conversazioni sono legati al tuo account: accedi o crea un account per acquistarli e ritrovarli su ogni dispositivo.', nqLoginC: 'Accedi',
+    nqBuyingT: 'Acquisto in corso', nqBuyingB: 'Completa il pagamento con {store}. I token arrivano appena il pagamento è verificato.',
+    nqBoughtT: 'Acquisto completato', nqBoughtB: 'Aggiunti {n} token. Saldo: {t} token ({c} conversazioni).',
+    nqFailT: 'Acquisto non completato', nqFailB: 'Il pagamento non è stato confermato, quindi non sono stati aggiunti token.', nqFailCfgB: 'La verifica dei pagamenti non è ancora attiva: non sono stati aggiunti token. Se ti è stato addebitato qualcosa, l’acquisto verrà verificato appena possibile.',
+    restoreT: 'Nessun acquisto da ripristinare', nqRestoredT: 'Saldo aggiornato', nqRestoredB: 'Saldo e acquisti ricaricati dal tuo account: {t} token ({c} conversazioni).', restoreB: 'Accedi per ritrovare i tuoi acquisti: sono legati al tuo account.',
+    purchasesNoneB: 'Qui trovi i pacchetti di token acquistati nell’app.',
+    nqMsg: 'Messaggi {a}/{b}', nqNew: 'Nuova · 30 token', nqDone: 'Conclusa · {b}/{b}', nqConvs: '{n} conversazioni · {t} token', nqConvs1: '1 conversazione · {t} token',
+    nqLoginL: 'Accedi per usare NOVA', nqLoading: 'Verifico il saldo…',
+    nqNoneT: 'Nessuna conversazione disponibile: ti servono 30 token per iniziarne una.', nqNoneL: 'Vai allo Shop',
+    nqClosedT: 'Hai usato i 20 messaggi di questa conversazione.', nqClosedL: 'Nuova conversazione',
+    nqLoginT: 'Accedi per parlare con NOVA: token e conversazioni sono legati al tuo account.', nqErrT: 'Non riesco a verificare il tuo saldo. Controlla la connessione e riprova.', nqRetry: 'Riprova',
+    nqPh: 'Conversazione conclusa', nqHistOpen: 'Messaggi {a}/{b} · in corso', nqHistDone: 'Conclusa · {a}/{b} messaggi', nqOpenConv: 'Riapri la conversazione',
+    nqNewOpenB: 'La conversazione attuale ({a}/{b}) resta salvata nella Cronologia: puoi riprenderla quando vuoi. La nuova userà 30 token al primo messaggio.' },
+  en: { shopSub: 'Tokens to talk with NOVA', credits: 'tokens', packsT: 'Token packs', nqPackConvs: '{n} conversations',
+    buyPack: 'Buy {p}: {c} tokens, {price}', novaCredits: '{n} NOVA tokens · open the Shop',
+    nqWalletSub: '{n} conversations · 30 tokens each', nqWalletSub1: '1 conversation · 30 tokens each', nqWalletSub0: '0 conversations · 30 tokens each',
+    payNaT: 'Purchases in the iPhone and Android app', payNaB: 'Tokens are bought in the OFFMind app through the App Store or Google Play. You can’t buy on the web: nothing is charged and no tokens are added.',
+    naT: 'Purchase not available here', naPack: 'You picked {p} · {c} tokens · {price}. You can buy it in the OFFMind app for iPhone or Android. Nothing is charged here and your balance doesn’t change.',
+    nqLoginBuyT: 'Sign in to buy', nqLoginBuyB: 'Tokens and conversations belong to your account: sign in or create an account to buy them and find them on every device.', nqLoginC: 'Sign in',
+    nqBuyingT: 'Purchase in progress', nqBuyingB: 'Complete the payment with {store}. Your tokens arrive as soon as the payment is verified.',
+    nqBoughtT: 'Purchase complete', nqBoughtB: '{n} tokens added. Balance: {t} tokens ({c} conversations).',
+    nqFailT: 'Purchase not completed', nqFailB: 'The payment wasn’t confirmed, so no tokens were added.', nqFailCfgB: 'Payment verification isn’t active yet: no tokens were added. If you were charged, the purchase will be verified as soon as possible.',
+    restoreT: 'Nothing to restore', nqRestoredT: 'Balance updated', nqRestoredB: 'Balance and purchases reloaded from your account: {t} tokens ({c} conversations).', restoreB: 'Sign in to see your purchases: they belong to your account.',
+    purchasesNoneB: 'Token packs bought in the app appear here.',
+    nqMsg: 'Messages {a}/{b}', nqNew: 'New · 30 tokens', nqDone: 'Ended · {b}/{b}', nqConvs: '{n} conversations · {t} tokens', nqConvs1: '1 conversation · {t} tokens',
+    nqLoginL: 'Sign in to use NOVA', nqLoading: 'Checking your balance…',
+    nqNoneT: 'No conversations available: you need 30 tokens to start one.', nqNoneL: 'Go to the Shop',
+    nqClosedT: 'You’ve used the 20 messages of this conversation.', nqClosedL: 'New conversation',
+    nqLoginT: 'Sign in to talk with NOVA: tokens and conversations belong to your account.', nqErrT: 'I can’t check your balance. Check your connection and try again.', nqRetry: 'Retry',
+    nqPh: 'Conversation ended', nqHistOpen: 'Messages {a}/{b} · in progress', nqHistDone: 'Ended · {a}/{b} messages', nqOpenConv: 'Reopen the conversation',
+    nqNewOpenB: 'The current conversation ({a}/{b}) stays saved in History: you can resume it whenever you like. The new one uses 30 tokens with its first message.' }
+};
+Object.keys(NQ_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, NQ_TXT[l]); });
+
+/* ---- server access: Supabase (production) or the test harness backend ---- */
+var NovaApi = {
+  sb: function () { return Backend && Backend.client; },
+  code: function (e) {
+    var m = String((e && (e.code === 'P0001' ? e.message : (e.code || e.message || e.error))) || '');
+    var known = ['insufficient_tokens', 'conversation_closed', 'not_found', 'not_authenticated', 'store_not_configured', 'transaction_not_found', 'not_purchased', 'revoked', 'mismatch', 'other_account', 'unknown_product', 'product_unavailable', 'cancelled'];
+    for (var i = 0; i < known.length; i++) if (m.indexOf(known[i]) >= 0) return known[i];
+    if (/fetch|network|Failed|load failed/i.test(m)) return 'network';
+    return 'unknown';
+  },
+  load: function (uid) {
+    if (Backend && Backend.novaLoad) return Backend.novaLoad(uid);
+    var sb = this.sb(); if (!sb) return Promise.resolve({ error: { code: 'unavailable' } });
+    return Promise.all([
+      sb.from('nova_wallet').select('tokens').eq('user_id', uid).maybeSingle(),
+      sb.from('nova_conversations').select('id, client_id, user_msgs, status, messages, started_at, last_at, ended_at').eq('user_id', uid).order('last_at', { ascending: false }).limit(50),
+      sb.from('nova_purchases').select('id, product_id, tokens, amount, currency, created_at').eq('user_id', uid).order('created_at', { ascending: false }).limit(100)
+    ]).then(function (r) {
+      var err = r.map(function (x) { return x.error; }).filter(Boolean)[0];
+      if (err) return { error: { code: NovaApi.code(err) } };
+      return { error: null, tokens: (r[0].data && r[0].data.tokens) || 0, convs: r[1].data || [], purchases: r[2].data || [] };
+    }, function (e) { return { error: { code: NovaApi.code(e) } }; });
+  },
+  call: function (fn, args) {
+    if (Backend && Backend.novaRpc) return Backend.novaRpc(fn, args);
+    var sb = this.sb(); if (!sb) return Promise.resolve({ error: { code: 'unavailable' } });
+    return sb.rpc(fn, args).then(function (r) { return r.error ? { error: { code: NovaApi.code(r.error) } } : { error: null, data: r.data }; }, function (e) { return { error: { code: NovaApi.code(e) } }; });
+  },
+  start: function (clientId) { return this.call('nova_start_conversation', { p_client_id: clientId }); },
+  count: function (convId) { return this.call('nova_count_message', { p_conv: convId }); },
+  save: function (convId, msgs) { return this.call('nova_save_messages', { p_conv: convId, p_messages: msgs }); },
+  verify: function (body) {
+    if (Backend && Backend.novaVerify) return Backend.novaVerify(body);
+    var sb = this.sb(); if (!sb || !sb.functions) return Promise.resolve({ ok: false, error: 'unavailable' });
+    return sb.functions.invoke('verify-purchase', { body: body }).then(function (r) {
+      if (!r.error) return r.data || { ok: false, error: 'unknown' };
+      var ctx = r.error.context;
+      return ctx && ctx.json ? ctx.json().then(function (d) { return d || { ok: false, error: 'unknown' }; }, function () { return { ok: false, error: 'unknown' }; }) : { ok: false, error: NovaApi.code(r.error) };
+    }, function (e) { return { ok: false, error: NovaApi.code(e) }; });
+  }
+};
+
+/* ---- App Store / Google Play, only inside the native app (cordova-plugin-purchase v13, also via Capacitor) ---- */
+var NativeStore = {
+  comp: null, inited: false,
+  api: function () { return window.CdvPurchase && window.CdvPurchase.store ? window.CdvPurchase : null; },
+  platform: function () {
+    var C = this.api(); if (!C) return null;
+    var dev = (window.cordova && window.cordova.platformId) || (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform());
+    return dev === 'ios' ? C.Platform.APPLE_APPSTORE : dev === 'android' ? C.Platform.GOOGLE_PLAY : null;
+  },
+  available: function () { return !!this.platform(); },
+  storeName: function () { var C = this.api(); return C && this.platform() === C.Platform.GOOGLE_PLAY ? 'Google Play' : 'App Store'; },
+  init: function (comp) {
+    this.comp = comp;
+    if (this.inited || !this.available()) return;
+    this.inited = true;
+    var C = this.api(), st = C.store, pf = this.platform(), self = this;
+    st.register(SHOP.packs.map(function (p) { return { id: NQ.PRODUCTS[p.id], type: C.ProductType.CONSUMABLE, platform: pf }; }));
+    st.when().approved(function (tx) { self.verify(tx); });
+    st.initialize([pf]);
+  },
+  order: function (pack) {
+    var C = this.api(), p = C && C.store.get(NQ.PRODUCTS[pack.id], this.platform()), offer = p && p.getOffer && p.getOffer();
+    if (!offer) return Promise.reject({ code: 'product_unavailable' });
+    return C.store.order(offer, { applicationUsername: Account.user && Account.user.id }).then(function (err) { if (err) throw { code: err.code === C.ErrorCode.PAYMENT_CANCELLED ? 'cancelled' : 'unknown' }; });
+  },
+  /* tokens are added only when the server has confirmed the transaction with Apple / Google; then the store transaction is finished */
+  verify: function (tx) {
+    var C = this.api(), ios = this.platform() === C.Platform.APPLE_APPSTORE, comp = this.comp;
+    var body = { platform: ios ? 'ios' : 'android', productId: tx.products && tx.products[0] && tx.products[0].id,
+      transactionId: tx.transactionId, purchaseToken: (tx.nativePurchase && tx.nativePurchase.purchaseToken) || tx.purchaseId };
+    return NovaApi.verify(body).then(function (r) {
+      if (r && r.ok) { try { tx.finish(); } catch (e) {} if (comp) { comp.nqLoad(true); comp.shopResult('ok', r.added || 0, r.tokens); } }
+      else if (comp) comp.shopResult('fail', (r && r.error) || 'unknown');
+    });
+  },
+  restore: function () { var C = this.api(); if (C) { try { C.store.restorePurchases(); } catch (e) {} } }
+};
+
+/* production: always (no account → sign in first, never free); test harness: only with a signed-in test account */
+function nqOn() { return !OM_DEMO || !!(Account && Account.user); }
+function nqNewId() { return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+(function () {
+  var P = Component.prototype;
+  var origRV = P.renderVals, origDU = P.componentDidUpdate, origMount = P.componentDidMount, origSend = P.sendNova, origStartV = P.startVoice,
+    origNew = P.novaNewChat, origLog = P.logNova, origHist = P.histRow, origShopBuy = P.shopBuy, origRestore = P.shopRestore;
+  var LOAD_MS = 15000, SAVE_MS = 1200;
+
+  P.nqState = function () { return this.state.nq || { uid: null, tokens: 0, convs: [], purchases: [], loaded: false, err: null }; };
+  P.nqConv = function (id) { var c = this.nqState().convs.filter(function (x) { return x.id === id; })[0]; return c || null; };
+  P.nqCur = function () { return this.state.nqCur ? this.nqConv(this.state.nqCur) : null; };
+  P.nqPatchConv = function (c) {
+    var q = this.nqState(), list = q.convs.filter(function (x) { return x.id !== c.id; });
+    var old = this.nqConv(c.id) || {};
+    this.setState({ nq: Object.assign({}, q, { convs: [Object.assign({}, old, c)].concat(list) }) });
+  };
+
+  /* balance, conversations and purchases always come from the server */
+  P.nqLoad = function (force) {
+    var self = this, u = Account && Account.user;
+    if (!u || !nqOn()) return Promise.resolve();
+    if (!force && this._nqAt && Date.now() - this._nqAt < LOAD_MS) return Promise.resolve();
+    this._nqAt = Date.now();
+    return NovaApi.load(u.id).then(function (r) {
+      if (!Account.user || Account.user.id !== u.id) return;
+      var q = self.nqState();
+      if (r.error) { self.setState({ nq: Object.assign({}, q, { uid: u.id, err: r.error.code }) }); return; }
+      self.setState({ nq: { uid: u.id, tokens: r.tokens, convs: r.convs, purchases: r.purchases, loaded: true, err: null } }, function () { self.nqAutoResume(); });
+    });
+  };
+  /* coming back to NOVA: the latest unfinished conversation continues, without a new charge */
+  P.nqAutoResume = function () {
+    var s = this.state; if (s.nqCur) return;
+    if (s.msgs.some(function (m) { return m.from === 'me'; })) return;
+    var open = this.nqState().convs.filter(function (c) { return c.status === 'open'; })[0];
+    if (open) this.nqResume(open.id, true);
+  };
+  P.nqResume = function (id, silent) {
+    var c = this.nqConv(id); if (!c) return;
+    try { NovaLive.end(); } catch (e) {}
+    Voice.cancel(); clearTimeout(this.novaT); clearTimeout(this.novaT2);
+    var msgs = (c.messages && c.messages.length) ? c.messages.map(function (m) { return { from: m.from, text: m.text, ex: m.ex, src: m.from === 'bot' ? 'live' : undefined }; }) : this.initChat().msgs;
+    var patch = { nqCur: id, nqBlock: null, msgs: msgs, quick: [], typing: false, novaErr: null, chatInput: '' };
+    if (!silent) Object.assign(patch, { screen: 'nova', stack: [] });
+    this.setState(patch);
+  };
+
+  /* why NOVA can't take a message right now (null = it can) */
+  P.nqGate = function () {
+    if (!nqOn()) return null;
+    if (!Account.user) return 'login';
+    var q = this.nqState();
+    if (!q.loaded) return q.err ? 'err' : 'loading';
+    var c = this.nqCur();
+    if (c && c.status === 'closed') return 'closed';
+    if (!c && q.tokens < NQ.COST) return 'none';
+    return null;
+  };
+  P.nqEnsureConv = function () {
+    var self = this, c = this.nqCur();
+    if (c && c.status === 'open') return Promise.resolve(c);
+    var cid = this._nqClient || (this._nqClient = nqNewId());      /* same id on retry: never charged twice */
+    return NovaApi.start(cid).then(function (r) {
+      if (r.error) throw r.error;
+      self._nqClient = null;
+      var conv = r.data, q = self.nqState();
+      self.setState({ nqCur: conv.id, nq: Object.assign({}, q, { tokens: Math.max(0, q.tokens - NQ.COST), convs: [conv].concat(q.convs.filter(function (x) { return x.id !== conv.id; })) }) });
+      self._nqAt = 0;
+      return conv;
+    });
+  };
+  P.nqFail = function (e) {
+    var k = (e && e.code) || 'unknown', c = this.nqCur();
+    if (k === 'insufficient_tokens') { this.setState({ nqBlock: 'none' }); this.nqLoad(true); }
+    else if (k === 'conversation_closed' && c) { this.nqPatchConv({ id: c.id, status: 'closed', user_msgs: NQ.LIMIT }); this.setState({ nqBlock: 'closed' }); }
+    else if (k === 'not_authenticated') this.setState({ nqBlock: 'login' });
+    else this.setState({ nqBlock: 'err' });
+  };
+  /* a risky message still opens urgent support, even when NOVA can't answer */
+  P.nqRisk = function (t) {
+    if (!isRisk(t)) return;
+    var self = this;
+    this.setState({ novaSafe: true });
+    clearTimeout(this.supT);
+    this.supT = setTimeout(function () { if (self.state.screen === 'nova') self.push('support', { supFrom: 'nova' }); }, 600);
+  };
+
+  /* every message sent by the user is counted on the server before it reaches NOVA */
+  P.sendNova = function (text) {
+    var self = this, t = (text || '').trim(), args = arguments;
+    if (!t || !nqOn()) return origSend.apply(this, args);
+    if (this._nqPending) return;
+    var g = this.nqGate();
+    if (g) { this.setState({ nqBlock: g === 'loading' ? null : g }); if (g === 'loading') this.nqLoad(true); this.nqRisk(t); return; }
+    this._nqPending = true;
+    this.nqEnsureConv().then(function (conv) {
+      return NovaApi.count(conv.id).then(function (r) {
+        if (r.error) throw r.error;
+        var d = r.data || {};
+        self.nqPatchConv({ id: conv.id, user_msgs: d.user_msgs, status: d.status, last_at: new Date().toISOString() });
+        self._nqPending = false;
+        if (self.state.nqBlock) self.setState({ nqBlock: null });
+        var out = origSend.apply(self, args);
+        if (d.status === 'closed') NovaLive.closeAfterReply = true;   /* NOVA answers the 20th message, then the conversation ends */
+        return out;
+      });
+    }).catch(function (e) { self._nqPending = false; self.nqFail(e); self.nqRisk(t); });
+  };
+
+  /* voice: the conversation must be open before the microphone goes live; each spoken message is counted */
+  P.startVoice = function () {
+    var self = this, args = arguments;
+    if (!nqOn()) return origStartV.apply(this, args);
+    if (this._nqPending) return;
+    var g = this.nqGate();
+    if (g) { this.setState({ nqBlock: g === 'loading' ? null : g }); if (g === 'loading') this.nqLoad(true); return; }
+    this._nqPending = true;
+    this.nqEnsureConv().then(function () { self._nqPending = false; return origStartV.apply(self, args); })
+      .catch(function (e) { self._nqPending = false; self.nqFail(e); });
+  };
+  var onMsg31 = NovaLive.onMessage;
+  NovaLive.onMessage = function (m) {
+    var c = this.comp, text = String((m && m.message) || '').trim(), src = m && (m.source || (m.role === 'agent' ? 'ai' : m.role));
+    var counted = c && nqOn() && text && src === 'user' && c.state.voiceOn && c.state.nqCur;
+    var r = onMsg31.apply(this, arguments);
+    if (counted) {
+      var live = this, convId = c.state.nqCur;
+      NovaApi.count(convId).then(function (x) {
+        if (x.error) {
+          if (x.error.code === 'conversation_closed') { live.end(); c.nqPatchConv({ id: convId, status: 'closed', user_msgs: NQ.LIMIT }); c.closeVoice(); c.setState({ nqBlock: 'closed' }); }
+          return;
+        }
+        c.nqPatchConv({ id: convId, user_msgs: x.data.user_msgs, status: x.data.status });
+        if (x.data.status === 'closed') live.closeAfterReply = true;
+      });
+    }
+    return r;
+  };
+  /* a resumed conversation gives NOVA the messages so far, so she knows where you left off */
+  var ctx0 = NovaLive.profileContext;
+  NovaLive.profileContext = function (s) {
+    var base = ctx0.apply(this, arguments);
+    if (!nqOn() || !s.nqCur) return base;
+    var past = (s.msgs || []).filter(function (m) { return m.text; }).slice(-12);
+    if (!past.some(function (m) { return m.from === 'me'; })) return base;
+    return base + ' Conversation so far (resumed by the user): ' + past.map(function (m) { return (m.from === 'me' ? 'User: ' : 'NOVA: ') + String(m.text).slice(0, 300); }).join(' | ');
+  };
+
+  /* new conversation: the current one stays saved and resumable; the next message starts (and pays for) a new one */
+  P.novaNewChat = function () {
+    var r = origNew.apply(this, arguments);
+    if (nqOn()) this.setState({ nqCur: null, nqBlock: null });
+    this._nqClient = null;
+    return r;
+  };
+
+  /* Cronologia: one row per conversation, with its own counter */
+  P.logNova = function () {
+    if (!nqOn()) return origLog.apply(this, arguments);
+    var s = this.state, c = this.nqCur();
+    if (!s.saveChats || !c) return;
+    var h = s.history.slice(), i = -1;
+    for (var k = 0; k < h.length; k++) if (h[k].type === 'nova' && h[k].convId === c.id) { i = k; break; }
+    var row = { type: 'nova', convId: c.id, count: c.user_msgs || 0, lim: NQ.LIMIT, closed: c.status === 'closed', at: Date.now() };
+    if (i >= 0) { row.id = h[i].id; h.splice(i, 1); } else row.id = uid();
+    h = h.map(function (x) { return x.type === 'nova' && x.live ? Object.assign({}, x, { live: false }) : x; });
+    this.setState({ history: [row].concat(h) });
+  };
+  P.histRow = function (h, T, i, n) {
+    var r = origHist.apply(this, arguments), self = this;
+    r.go = function () {}; r.goKey = function () {}; r.role = ''; r.tab = ''; r.goCls = '';
+    if (h.type === 'nova' && h.convId) {
+      var c = this.nqConv(h.convId), used = c ? c.user_msgs : h.count, closed = c ? c.status === 'closed' : !!h.closed;
+      r.meta = fill(closed ? T.nqHistDone : T.nqHistOpen, { a: used, b: NQ.LIMIT });
+      if (c) {
+        r.go = function () { self.nqResume(h.convId); };
+        r.goKey = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); self.nqResume(h.convId); } };
+        r.role = 'button'; r.tab = '0'; r.goCls = 'om-go';
+      }
+    }
+    return r;
+  };
+
+  /* ---- Shop ---- */
+  P.shopBuy = function (pack) {
+    if (!nqOn()) return origShopBuy.apply(this, arguments);
+    if (!Account.user) return this.shopOpen('login');
+    if (!NativeStore.available()) return this.shopOpen('pack', pack);
+    var self = this;
+    this.shopOpen('buying', pack);
+    NativeStore.order(pack).catch(function (e) {
+      if (e && e.code === 'cancelled') self.shopClose(); else self.shopResult('fail', (e && e.code) || 'unknown');
+    });
+  };
+  P.shopResult = function (kind, a, b) { this.setState({ shopModal: { kind: kind === 'ok' ? 'bought' : 'fail', item: { added: a, err: a, tokens: b } }, modalOut: false }); };
+  P.shopRestore = function () {
+    if (!nqOn()) return origRestore.apply(this, arguments);
+    if (!Account.user) return this.shopOpen('login');
+    var self = this;
+    NativeStore.restore();
+    this.nqLoad(true).then(function () { self.shopOpen('restored'); });
+  };
+
+  P.componentDidMount = function () {
+    var r = origMount ? origMount.apply(this, arguments) : undefined;
+    NativeStore.init(this);
+    return r;
+  };
+  P.componentDidUpdate = function (pp, ps) {
+    var r = origDU ? origDU.apply(this, arguments) : undefined, s = this.state, self = this;
+    var u = Account && Account.user, uidNow = u ? u.id : null, q = s.nq;
+    if (nqOn() && (q ? q.uid : null) !== uidNow && this._nqUid !== uidNow) {
+      this._nqUid = uidNow; this._nqAt = 0;
+      this.setState({ nq: null, nqCur: null, nqBlock: null });
+      if (uidNow) this.nqLoad(true);
+    } else if (uidNow && ps && ps.screen !== s.screen && (s.screen === 'nova' || s.screen === 'shop' || s.screen === 'purchases' || s.screen === 'history')) this.nqLoad(false);
+    /* the transcript of the current conversation is saved with it */
+    if (nqOn() && s.nqCur && ps && ps.msgs !== s.msgs && s.saveChats) {
+      clearTimeout(this._nqSaveT);
+      var convId = s.nqCur;
+      this._nqSaveT = setTimeout(function () {
+        var msgs = self.state.msgs.filter(function (m) { return m.text; }).slice(-80).map(function (m) { var o = { from: m.from, text: String(m.text).slice(0, 2000) }; if (m.ex) o.ex = m.ex; return o; });
+        NovaApi.save(convId, msgs).then(function (x) { if (!x.error) { var c = self.nqConv(convId); if (c) c.messages = msgs; } });
+      }, SAVE_MS);
+    }
+    /* each counted message updates its Cronologia row */
+    if (nqOn() && s.nqCur && ps && ps.nq !== s.nq) {
+      var c = this.nqCur(), row = c && s.history.filter(function (x) { return x.type === 'nova' && x.convId === c.id; })[0];
+      if (c && (!row || row.count !== c.user_msgs || row.closed !== (c.status === 'closed')) && s.msgs.some(function (m) { return m.from === 'me'; })) this.logNova();
+    }
+    return r;
+  };
+
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this, lang = s.lang, on = nqOn();
+    var q = this.nqState(), tokens = on ? q.tokens : 0, convs = Math.floor(tokens / NQ.COST);
+    var money = function (n) { try { return new Intl.NumberFormat(SPEECH_LANG[lang] || 'en-US', { style: 'currency', currency: SHOP.currency }).format(n); } catch (e) { return n.toFixed(2) + ' €'; } };
+    var packName = function (p) { return T['pack' + p.id.charAt(0).toUpperCase() + p.id.slice(1)]; };
+
+    /* wallet: the same numbers in the Shop and in NOVA */
+    if (v.wallet) {
+      v.wallet.credits = String(tokens); v.wallet.creditsL = T.credits;
+      v.wallet.sub = convs === 0 ? T.nqWalletSub0 : convs === 1 ? T.nqWalletSub1 : fill(T.nqWalletSub, { n: convs });
+      v.wallet.payOff = !NativeStore.available();
+      v.wallet.novaAria = fill(T.novaCredits, { n: tokens });
+    }
+    if (v.shop) {
+      v.shop.packs.forEach(function (p) { var pk = SHOP.packs.filter(function (x) { return x.id === p.key; })[0]; if (pk) p.convs = fill(T.nqPackConvs, { n: pk.convs }); });
+      if (on) {
+        v.shop.purchases = q.purchases.map(function (p) {
+          var pk = SHOP.packs.filter(function (x) { return NQ.PRODUCTS[x.id] === p.product_id; })[0];
+          return { key: p.id, l: p.tokens + ' ' + T.credits + (pk ? ' · ' + packName(pk) : ''), d: new Date(p.created_at).toLocaleDateString(SPEECH_LANG[lang] || 'en-US'), amt: p.amount != null ? money(+p.amount) : '' };
+        });
+        v.shop.none = !v.shop.purchases.length; v.shop.has = !v.shop.none;
+      }
+    }
+
+    /* NOVA: balance, conversations and the message counter */
+    if (s.screen === 'nova') {
+      var c = this.nqCur(), g = on ? this.nqGate() : null, closed = !!(c && c.status === 'closed');
+      var used = c ? c.user_msgs || 0 : 0;
+      var nq = { on: on, msgL: '', convL: '', vSuffix: '', ph: closed && on ? T.nqPh : T.typeMsg, block: false, blockT: '', blockL: '', blockGo: function () {} };
+      if (on) {
+        if (!Account.user) { nq.msgL = T.nqLoginL; nq.convL = ''; }
+        else if (!q.loaded && !q.err) { nq.msgL = T.nqLoading; }
+        else {
+          nq.msgL = closed ? fill(T.nqDone, { b: NQ.LIMIT }) : c ? fill(T.nqMsg, { a: used, b: NQ.LIMIT }) : T.nqNew;
+          nq.convL = convs === 1 ? fill(T.nqConvs1, { t: tokens }) : fill(T.nqConvs, { n: convs, t: tokens });
+        }
+        if (c && !closed && s.voiceOn) nq.vSuffix = ' · ' + used + '/' + NQ.LIMIT;
+        var why = s.nqBlock || (closed && !s.typing ? 'closed' : null) || (g === 'login' ? 'login' : null);
+        if (why && why !== 'loading') {
+          nq.block = true;
+          if (why === 'none') { nq.blockT = T.nqNoneT; nq.blockL = T.nqNoneL; nq.blockGo = function () { self.setState({ nqBlock: null }); self.tab('shop'); }; }
+          else if (why === 'closed') { nq.blockT = T.nqClosedT; nq.blockL = T.nqClosedL; nq.blockGo = function () { self.novaNewChat(); }; }
+          else if (why === 'login') { nq.blockT = T.nqLoginT; nq.blockL = T.nqLoginC; nq.blockGo = function () { self.setState({ screen: 'auth', authMode: 'login', stack: ['nova'], authErr: '', nqBlock: null }); }; }
+          else { nq.blockT = T.nqErrT; nq.blockL = T.nqRetry; nq.blockGo = function () { self.setState({ nqBlock: null }); self.nqLoad(true); }; }
+        }
+        if (closed && v.nv) { v.nv.sendOff = true; }
+        /* new conversation while this one is unfinished: it stays saved */
+        if (s.novaModal === 'new' && v.modal && c && !closed) v.modal.b = fill(T.nqNewOpenB, { a: used, b: NQ.LIMIT });
+      }
+      v.nq = nq;
+    } else v.nq = { on: false, block: false, ph: T.typeMsg, vSuffix: '' };
+
+    /* Shop sheets: information only; success only after a server-verified purchase */
+    if (on && s.shopModal) {
+      var m = s.shopModal, it = m.item || {}, t, b, cta = T.gotIt, go = function () { self.shopClose(); };
+      if (m.kind === 'pack') { t = T.naT; b = fill(T.naPack, { p: packName(it), c: it.credits, price: money(it.price) }); }
+      else if (m.kind === 'login') { t = T.nqLoginBuyT; b = T.nqLoginBuyB; cta = T.nqLoginC; go = function () { self.shopClose(); self.setState({ screen: 'auth', authMode: 'login', stack: ['shop'], authErr: '' }); }; }
+      else if (m.kind === 'buying') { t = T.nqBuyingT; b = fill(T.nqBuyingB, { store: NativeStore.storeName() }); }
+      else if (m.kind === 'bought') { var tt = it.tokens != null ? it.tokens : tokens; t = T.nqBoughtT; b = fill(T.nqBoughtB, { n: it.added, t: tt, c: Math.floor(tt / NQ.COST) }); }
+      else if (m.kind === 'fail') { t = T.nqFailT; b = it.err === 'store_not_configured' ? T.nqFailCfgB : T.nqFailB; }
+      else if (m.kind === 'restored') { t = T.nqRestoredT; b = fill(T.nqRestoredB, { t: tokens, c: convs }); }
+      else if (m.kind === 'restore') { t = T.restoreT; b = T.restoreB; }
+      if (t) {
+        v.hasModal = true;
+        v.modal = { t: t, b: b, c: cta, needsType: false, blocked: false, single: true, cBg: 'linear-gradient(120deg, var(--accM), var(--acc) 55%, var(--acc2))', cC: '#FFFFFF' };
+        v.modalConfirm = go; v.modalCancel = false;
+      }
+    }
+    return v;
+  };
+})();
 
 window.__ELConversation = window.ElevenLabsClient && window.ElevenLabsClient.Conversation;
 var START = ['lang','welcome','auth','games','home','exercises','nova','shop','stats','profile','settings'];
