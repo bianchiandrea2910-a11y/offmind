@@ -1996,14 +1996,14 @@ body{margin:0;background:#07070B}
 <span class="om-st-delta {{st.deltaCls}}">{{st.delta}}</span>
 </sc-if>
 <sc-if value="{{st.none}}" hint-placeholder-val="{{false}}">
-<span style="font-size: 14px; font-weight: 800">{{T.stEmptyT}}</span>
-<span style="font-size: 12.5px; font-weight: 600; color: var(--tx3); line-height: 1.45">{{T.stEmptyB}}</span>
+<span style="font-size: 14px; font-weight: 800">{{st.emptyT}}</span>
+<span style="font-size: 12.5px; font-weight: 600; color: var(--tx3); line-height: 1.45">{{st.emptyB}}</span>
 </sc-if>
 </div>
 </div>
 <sc-if value="{{st.none}}" hint-placeholder-val="{{false}}"><button class="om-tap btn-p" onClick="{{st.toHome}}" style="height: 50px">{{T.stEmptyCta}}</button></sc-if>
 <button class="om-tap om-howbtn" onClick="{{st.toggleInfo}}" aria-expanded="{{st.info}}" aria-controls="om-st-how"><svg class="om-i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>{{T.stHow}}</button>
-<sc-if value="{{st.info}}" hint-placeholder-val="{{false}}"><div id="om-st-how" class="om-st-info om-fade-in"><span>{{T.stHowTxt}}</span><span><b>{{T.stHowScale}}</b></span></div></sc-if>
+<sc-if value="{{st.info}}" hint-placeholder-val="{{false}}"><div id="om-st-how" class="om-st-info om-fade-in"><span>{{T.stHowTxt}}</span><span><b>{{T.stHowScale}}</b></span><span>{{T.stHowMore}}</span></div></sc-if>
 </section>
 
 <section class="card om-st-card" aria-labelledby="om-st-trend">
@@ -7370,6 +7370,59 @@ function acStartScreen(hsh) {
           Backend.resendEmailChange(p).then(function (r) { self.toast(r.error ? self.acErrText(r.error) : T.acResent); });
         };
       }
+    }
+    return v;
+  };
+})();
+
+
+/* ---------- v27 · Statistiche e progressi: real data only ---------- */
+var STATS27_TXT = {
+  it: { stHowTxt: 'Lo Score mentale va da 0 a 100 e riassume come ti sei sentito nel periodo scelto. È la media di quello che ci dici tu: il voto da 1 a 10 che dai a fine esercizio (un 8 vale 80), lo stato che scegli nel check-in e come ti senti a fine sessione di gioco. Più spesso lo aggiorni, più è preciso. Non è una valutazione medica.',
+    stHowScale: 'Valore degli stati: Concentrato 90 · Calmo 85 · Sotto pressione 55 · Stanco 45 · Demotivato 40 · Stressato e Ansioso 35 · Mentalmente scarico 30 · Tiltato e Arrabbiato 25',
+    stHowMore: 'Giorni di fila: giorni consecutivi con almeno un esercizio completato. Minuti di allenamento: la durata degli esercizi che hai fatto, compresi i minuti di quelli interrotti.',
+    stNewT: 'Il tuo percorso inizia qui', stNewB: 'Fai il primo check-in o completa un esercizio: qui vedrai crescere Score mentale, minuti e giorni di fila. Solo i tuoi dati reali.',
+    stEmptyB2: 'Prova un periodo più lungo, oppure fai un check-in: lo score si aggiorna subito.' },
+  en: { stHowTxt: 'Your mental score goes from 0 to 100 and sums up how you felt in the selected period. It’s the average of what you tell us: the 1–10 rating you give after each exercise (an 8 counts as 80), the state you pick in check-ins and how you feel at the end of a gaming session. The more often you update it, the more accurate it gets. It’s not a medical assessment.',
+    stHowScale: 'State values: Focused 90 · Calm 85 · Under pressure 55 · Tired 45 · Unmotivated 40 · Stressed and Anxious 35 · Drained 30 · Tilted and Angry 25',
+    stHowMore: 'Day streak: consecutive days with at least one completed exercise. Training minutes: how long your exercises lasted, including the minutes of the ones you stopped early.',
+    stNewT: 'Your journey starts here', stNewB: 'Do your first check-in or finish an exercise: your mental score, minutes and day streak will grow here. Only your real data.',
+    stEmptyB2: 'Try a longer period, or do a check-in: the score updates right away.' }
+};
+Object.keys(STATS27_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, STATS27_TXT[l]); });
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origDU = P.componentDidUpdate, origMount = P.componentDidMount;
+
+  /* the old counters follow the history: totals, streak and 7-day score, never demo values */
+  function realCounters(hist) {
+    var today0 = Stats.day0(Date.now()), secs = 0, done = 0;
+    (hist || []).forEach(function (h) { secs += Stats.exSecs(h); if (h.type === 'ex' && !h.partial) done++; });
+    var w7 = Stats.period(hist || [], 7, today0);
+    return { minutes: Math.round(secs / 60), done: done, streak: Stats.streak(hist || [], today0).n, score: w7.score == null ? 0 : w7.score,
+      trainedToday: Stats.streak(hist || [], today0).today };
+  }
+  P.st27Sync = function () {
+    if (OM_DEMO && !Account.user) return;     /* the test harness keeps its demo state unless an account is in use */
+    var c = realCounters(this.state.history), s = this.state;
+    if (c.minutes !== s.minutes || c.done !== s.done || c.streak !== s.streak || c.score !== s.score || c.trainedToday !== s.trainedToday) this.setState(c);
+  };
+  P.componentDidMount = function () { var r = origMount ? origMount.apply(this, arguments) : undefined; this.st27Sync(); return r; };
+  P.componentDidUpdate = function (pp, ps) {
+    var r = origDU ? origDU.apply(this, arguments) : undefined;
+    if (ps && ps.history !== this.state.history) this.st27Sync();
+    return r;
+  };
+
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T;
+    if (s.screen === 'stats' && v.st) {
+      var hist = s.history || [];
+      /* nothing recorded yet at all → welcome; something recorded, just not in this period → suggest a longer range */
+      var anything = hist.some(function (h) { return h.type === 'ex' || h.type === 'checkin' || h.type === 'session'; });
+      v.st.isNew = !anything;
+      v.st.emptyT = anything ? T.stEmptyT : T.stNewT;
+      v.st.emptyB = anything ? (T.stEmptyB2 || T.stEmptyB) : T.stNewB;
     }
     return v;
   };
