@@ -2617,20 +2617,10 @@ body{margin:0;background:#07070B}
 <h1 class="h1" aria-live="assertive">{{T.supT}}</h1>
 <p class="sub">{{T.supB}}</p>
 </div>
-<div style="display: flex; flex-direction: column; gap: 10px">
-<h2 class="lbl" style="margin: 0">{{T.supLines}}</h2>
-<sc-for list="{{sup.lines}}" as="l" hint-placeholder-count="2">
-<div class="card" style="padding: 16px; display: flex; flex-direction: column; gap: 6px">
-<span style="font-size: 15px; font-weight: 800">{{l.n}}</span>
-<span style="font-family: 'Unbounded', sans-serif; font-size: 18px; font-weight: 600; -webkit-user-select: text; user-select: text">{{l.num}}</span>
-<span style="font-size: 12px; font-weight: 700; color: var(--tx3)">{{l.note}}</span>
-</div>
-</sc-for>
-</div>
-<p style="margin: 0; font-size: 13px; line-height: 1.5; color: var(--tx3)">{{T.supNote}}</p>
+<p style="margin: 0; font-size: 13px; line-height: 1.5; color: var(--tx3); -webkit-user-select: text; user-select: text">{{T.supMailNote}}</p>
 </div>
 <div style="flex-shrink: 0; padding: 10px 20px 24px; display: flex; flex-direction: column; gap: 4px">
-<a class="om-tap btn-p" href="tel:112" style="text-decoration: none"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"></path></svg>{{T.supCall}}</a>
+<a class="om-tap btn-p" href="mailto:info.offmind@gmail.com?subject=Supporto%20OFFMind" style="text-decoration: none"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3zM3 7l9 6 9-6"></path></svg>{{T.supMail}}</a>
 <button class="om-tap btn-t" onClick="{{goBack}}">{{sup.backLbl}}</button>
 </div>
 </div>
@@ -7588,6 +7578,16 @@ function omPhaseOf(s) {
     this.toast(w.score != null ? fill(T.p29Saved, { n: w.score }) : (T.p29SavedNo || T.sesSaved));
   };
 })();
+
+
+/* ---------- v30 · Supporto: contact by email ---------- */
+var SUP30_TXT = {
+  it: { supMail: 'CONTATTA IL SUPPORTO', supMailNote: 'Se non si apre l’app email, scrivici a info.offmind@gmail.com. OFFMind non è un servizio di emergenza.', supRowSub: 'Contatta il supporto via email' },
+  en: { supMail: 'CONTACT SUPPORT', supMailNote: 'If your email app doesn’t open, write to us at info.offmind@gmail.com. OFFMind is not an emergency service.', supRowSub: 'Contact support by email' },
+  es: { supMail: 'CONTACTAR CON SOPORTE' }, fr: { supMail: 'CONTACTER LE SUPPORT' }, de: { supMail: 'SUPPORT KONTAKTIEREN' }, pt: { supMail: 'FALAR COM O SUPORTE' },
+  zh: { supMail: '联系支持' }, ja: { supMail: 'サポートに連絡' }, ko: { supMail: '고객 지원 문의' }
+};
+Object.keys(SUP30_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, SUP30_TXT[l]); });
 
 window.__ELConversation = window.ElevenLabsClient && window.ElevenLabsClient.Conversation;
 var START = ['lang','welcome','auth','games','home','exercises','nova','shop','stats','profile','settings'];
