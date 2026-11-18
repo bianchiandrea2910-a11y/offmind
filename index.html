@@ -1824,7 +1824,7 @@ body{margin:0;background:#07070B}
 <div class="om-pop" aria-hidden="true" style="width: 76px; height: 76px; border-radius: 50%; background: linear-gradient(145deg, #34D399, #12A37F); display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 16px 40px -14px rgba(52,211,153,.7); color: #07140F"><svg class="om-i" width="38" height="38" viewBox="0 0 24 24" style="stroke-width: 2.8"><path d="m5 12 5 5 9-10"></path></svg></div>
 <span class="lbl" style="color: var(--ok); margin-top: 4px">{{T.sessionDone}}</span>
 <h1 class="h1" style="font-size: 24px; text-wrap: balance">{{cx.name}}</h1>
-<div class="om-cx-pills"><span class="xp">+{{gain}} XP</span><span><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{cx.dur}}</span><span><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="color: #FF8A3D"><path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"></path></svg>{{streak}} {{T.streakDays}}</span></div>
+<div class="om-cx-pills"><span class="xp">{{cx.todayPill}}</span><span><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{cx.dur}}</span><span><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="color: #FF8A3D"><path d="M12 3c1 3 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-6 1-9z"></path></svg>{{cx.streakL}}</span></div>
 </div>
 <sc-if value="{{cx.isTilt}}" hint-placeholder-val="{{false}}">
 <section class="card om-cx-focus om-fade-in" aria-labelledby="om-cx-f"><h2 id="om-cx-f" class="om-h3">{{cx.focusT}}</h2>
@@ -7449,6 +7449,143 @@ I18N.it = Object.assign(I18N.it || {}, { goal: 'A cosa serve', how: 'Come funzio
       v.ex.stepsLbl = T.steps + ' · ' + (e && !TIMED[e.k] && T.upTo ? T.upTo + ' ' : '') + v.ex.dur;   /* interactive ones can end earlier */
     }
     return v;
+  };
+})();
+
+
+/* ---------- v29 · Check-in → exercise → session → rating → progress ---------- */
+var PATH29_TXT = {
+  it: { p29ForYouPost: 'Per te, dopo la sessione', p29ForYouLive: 'Per te, durante la sessione',
+    p29PlayStart: 'Sei pronto. Avvia la sessione di gioco: OFFMind ti ricorda pause e reset.', p29PlayStartCta: 'AVVIA SESSIONE DI GIOCO',
+    p29PlayLive: 'Sei pronto. Torna alla tua sessione di gioco.', p29PlayLiveCta: 'TORNA ALLA SESSIONE',
+    p29PlayPost: 'Ottima chiusura. Guarda come stanno andando i tuoi progressi.', p29PlayPostCta: 'VEDI I PROGRESSI',
+    p29Today: 'Oggi {a}/{b}', p29Day1: '{n} giorno di fila', p29DayN: '{n} giorni di fila',
+    p29Saved: 'Sessione salvata · Score mentale {n}/100', p29SavedNo: 'Sessione salvata.',
+    ciMsgPost: { calm: 'Bella sessione. Fissa cosa ha funzionato e chiudi bene.', focused: 'Ottima sessione. Due minuti per capire cosa ha funzionato.',
+      stressed: 'Sessione pesante: fai scendere la tensione prima di staccare.', tilted: 'Partita chiusa. Lascia andare il tilt prima di rigiocare.',
+      angry: 'Scarica la tensione sul corpo, non sul prossimo match.', anxious: 'La sessione è finita: rallenta il respiro.',
+      tired: 'Hai dato tutto. Ora recupera.', unmotivated: 'Una sessione storta non ti definisce. Riparti da ciò che è andato bene.',
+      pressure: 'La pressione è passata: lasciala scendere.', drained: 'Batterie scariche: adesso conta ricaricarsi.' } },
+  en: { p29ForYouPost: 'For you, after the session', p29ForYouLive: 'For you, during the session',
+    p29PlayStart: 'You’re ready. Start your gaming session: OFFMind reminds you about breaks and resets.', p29PlayStartCta: 'START GAMING SESSION',
+    p29PlayLive: 'You’re ready. Head back to your gaming session.', p29PlayLiveCta: 'BACK TO THE SESSION',
+    p29PlayPost: 'Great way to wrap up. See how your progress is going.', p29PlayPostCta: 'SEE YOUR PROGRESS',
+    p29Today: 'Today {a}/{b}', p29Day1: '{n} day streak', p29DayN: '{n} day streak',
+    p29Saved: 'Session saved · Mental score {n}/100', p29SavedNo: 'Session saved.',
+    ciMsgPost: { calm: 'Good session. Note what worked and close it well.', focused: 'Great session. Two minutes to understand what worked.',
+      stressed: 'Heavy session: let the tension drop before you log off.', tilted: 'Match closed. Let the tilt go before you queue again.',
+      angry: 'Release the tension through your body, not on the next match.', anxious: 'The session is over: slow your breathing down.',
+      tired: 'You gave it everything. Now recover.', unmotivated: 'A rough session doesn’t define you. Start again from what went well.',
+      pressure: 'The pressure is over: let it come down.', drained: 'Batteries empty: now it’s about recharging.' } },
+  es: { p29Today: 'Hoy {a}/{b}' }, fr: { p29Today: 'Aujourd’hui {a}/{b}' }, de: { p29Today: 'Heute {a}/{b}' }, pt: { p29Today: 'Hoje {a}/{b}' },
+  zh: { p29Today: '今天 {a}/{b}' }, ja: { p29Today: '今日 {a}/{b}' }, ko: { p29Today: '오늘 {a}/{b}' }
+};
+Object.keys(PATH29_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, PATH29_TXT[l]); });
+
+/* fixed tables: which exercises fit each state at each moment (pre-game keeps the existing REC_ALT) */
+var REC_POST = {
+  calm: ['reflection', 'recovery', 'sleep'], focused: ['reflection', 'recovery', 'detach'], stressed: ['cooldown', 'relaxbreath', 'muscle'],
+  tilted: ['lossreset', 'detach', 'cooldown'], angry: ['muscle', 'cooldown', 'lossreset'], anxious: ['relaxbreath', 'cooldown', 'muscle'],
+  tired: ['relaxbreath', 'sleep', 'recovery'], unmotivated: ['recovery', 'detach', 'reflection'], pressure: ['relaxbreath', 'reflection', 'cooldown'],
+  drained: ['recovery', 'sleep', 'relaxbreath']
+};
+var REC_LIVE = {
+  calm: ['focusboost', 'between', 'pause'], focused: ['focusboost', 'between', 'quickbreath'], stressed: ['quickbreath', 'reset', 'grounding'],
+  tilted: ['antitilt', 'reset', 'lossreset'], angry: ['reset', 'antitilt', 'quickbreath'], anxious: ['quickbreath', 'grounding', 'reset'],
+  tired: ['pause', 'between', 'focusboost'], unmotivated: ['focusboost', 'between', 'pause'], pressure: ['quickbreath', 'reset', 'focusboost'],
+  drained: ['pause', 'between', 'quickbreath']
+};
+var POST_WINDOW = 3 * 3600000;
+var OM_PHASE = 'pre';
+function omPhaseOf(s) {
+  if (s.session) return 'during';
+  var last = (s.history || []).filter(function (h) { return h.type === 'session'; })[0];
+  return last && Date.now() - last.at < POST_WINDOW ? 'post' : 'pre';
+}
+
+(function () {
+  /* moment-aware picks; no state → unchanged behaviour (Home shows no "for you" pick without a check-in) */
+  var origRecOptions = recOptions;
+  recOptions = function (stateId, hour, durPref) {
+    var T = OM_PHASE === 'post' ? REC_POST : (OM_PHASE === 'during' ? REC_LIVE : null);
+    if (!stateId || !T || !T[stateId]) return origRecOptions.apply(this, arguments);
+    var o = T[stateId].slice();
+    if (durPref === 'short') o.sort(function (a, b) { return (EXI[a].sec <= 120 ? 0 : 1) - (EXI[b].sec <= 120 ? 0 : 1); });
+    return o;
+  };
+
+  /* the end-of-session mood counts once in the score: the check-in written with it carries src: 'session',
+     and older pairs (same moment, same mood) are recognised too */
+  var origSignal = Stats.signal, origPeriod = Stats.period, origBuckets = Stats.buckets;
+  function markPairs(hist) {
+    var m = {}; (hist || []).forEach(function (h) { if (h.type === 'session' && h.mood) m[h.at + '|' + h.mood] = 1; });
+    Stats._pair = m;
+  }
+  Stats.signal = function (h) {
+    if (h && h.type === 'checkin' && (h.src === 'session' || (Stats._pair && Stats._pair[h.at + '|' + h.stateId]))) return null;
+    return origSignal.apply(this, arguments);
+  };
+  Stats.period = function (hist) { markPairs(hist); return origPeriod.apply(this, arguments); };
+  if (origBuckets) Stats.buckets = function (hist) { markPairs(hist); return origBuckets.apply(this, arguments); };
+
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var s = this.state, self = this;
+    OM_PHASE = omPhaseOf(s);
+    var v = origRV.call(this), T = v.T, lang = s.lang;
+
+    /* Home: say which moment the pick is for, and talk about the session that just ended */
+    if (s.screen === 'home') {
+      if (v.home && OM_PHASE !== 'pre') v.home.forYou = OM_PHASE === 'post' ? T.p29ForYouPost : T.p29ForYouLive;
+      var ciToday = !!(s.checkin && s.checkin.at >= dayStart());
+      if (v.ci && ciToday && OM_PHASE === 'post') {
+        var pm = (T.ciMsgPost || PATH29_TXT.en.ciMsgPost)[s.checkin.id]; if (pm) v.ci.msg = pm;
+      }
+    }
+
+    /* completion: real progress pills and the next step of the path */
+    if (s.screen === 'complete' && v.cx) {
+      var d0 = dayStart(), nT = s.history.filter(function (h) { return h.type === 'ex' && !h.partial && h.at >= d0; }).length;
+      v.cx.todayPill = fill(T.p29Today || PATH29_TXT.en.p29Today, { a: Math.min(nT, 2), b: 2 });
+      var sk = s.streak || 0;
+      v.cx.streakL = T.p29Day1 ? fill(sk === 1 ? T.p29Day1 : T.p29DayN, { n: sk }) : sk + ' ' + T.streakDays;
+      var adv = v.advice && v.advice[0], E = EXI[s.exId];
+      if (adv && adv.key === 'play' && T.p29PlayStart) {
+        if (s.session) { adv.text = T.p29PlayLive; adv.cta = T.p29PlayLiveCta; adv.go = function () { self.setState({ screen: 'sessionLive', stack: [] }); }; }
+        else if (E && E.cat === 'post') { adv.text = T.p29PlayPost; adv.cta = T.p29PlayPostCta; adv.go = function () { self.setState({ screen: 'stats', stack: ['profile'] }); }; }
+        else { adv.text = T.p29PlayStart; adv.cta = T.p29PlayStartCta; adv.go = function () { self.sesStart(); }; }
+      } else if (adv && adv.key === 'another') {
+        /* one more exercise for the same check-in state, short, not the one just done */
+        var last = s.history[0], st = last && last.type === 'ex' && last.exId === s.exId ? last.before : null;
+        var nx = st ? recOptions(st, new Date().getHours(), s.durPref).filter(function (id) { return id !== s.exId && EXI[id].sec <= 120; })[0] : null;
+        if (nx) {
+          adv.cta = T.startX + ' ' + this.exName(nx).toUpperCase(); adv.ic = EXI[nx].ic; adv.bg = solid(EXI[nx].hue);
+          adv.go = function () { self.startEx(nx, self.state.ret); };
+        }
+      }
+    }
+
+    /* session end: the suggestion follows the chosen mood; saving shows the updated score */
+    if (s.screen === 'sessionEnd' && v.ses) {
+      var mood = s.sesMood, pick = mood ? (REC_POST[mood] || [SES_COOL_EX])[0] : null;
+      if (pick) {
+        var pe = EXI[pick];
+        v.ses.coolShow = true; v.ses.coolTile = solid(pe.hue); v.ses.coolIc = pe.ic; v.ses.coolSub = this.exName(pick) + ' · ' + fmtDur(pe.sec, T);
+        v.ses.cool = function () { if (self.state.sesMood && self.state.sesTilt) self.p29SaveSession(T); self.startEx(pick, 'home'); };
+      }
+      v.ses.save = function () { self.p29SaveSession(T); self.tab('home'); };
+    }
+    return v;
+  };
+
+  P.p29SaveSession = function (T) {
+    var s = this.state, e = s.sesEnded; if (!e || e.saved) return;
+    var m = s.sesMood, at = Date.now();
+    var add = [{ id: uid(), type: 'session', game: e.game, dur: e.end - e.start, resets: e.resets, breaks: e.breaks, mood: m, tilt: s.sesTilt, at: at }];
+    if (m) add.unshift({ id: uid(), type: 'checkin', stateId: m, at: at, src: 'session' });
+    var hist = add.concat(s.history), w = Stats.period(hist, 7, Stats.day0(at));
+    this.setState({ sesEnded: Object.assign({}, e, { saved: true }), history: hist, checkin: m ? { id: m, at: at } : s.checkin });
+    this.toast(w.score != null ? fill(T.p29Saved, { n: w.score }) : (T.p29SavedNo || T.sesSaved));
   };
 })();
 
