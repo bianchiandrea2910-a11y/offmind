@@ -1144,6 +1144,22 @@ body{margin:0;background:#07070B}
 .om-bar.today b::after{content:"";position:absolute;left:50%;top:calc(100% + 3px);width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--accM);box-shadow:0 0 6px var(--glowA)}
 .om-bar.today.none i::after{background:color-mix(in srgb,var(--accM) 30%,var(--trk));box-shadow:0 0 0 1px color-mix(in srgb,var(--accM) 70%,transparent)}
 .om-bars{padding-bottom:7px}
+/* ---- v41: Anti-Tilt sort · neutral buttons, line under the card ---- */
+.om-root .om-sort-btns .om-sort-yes,.om-root .om-sort-btns .om-sort-no{border:1.5px solid rgba(255,255,255,.26);background:rgba(255,255,255,.07);color:#F1EDFF;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+  transition:background-color var(--d2) var(--e-io),border-color var(--d2) var(--e-io),box-shadow var(--d2) var(--e-io),opacity var(--d2) var(--e-io)}
+.om-root .om-sort-btns .om-sort-yes.picked{border-color:rgba(52,211,153,.95);background:rgba(52,211,153,.22);color:#E6FBF2;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 26px -8px rgba(52,211,153,.75)}
+.om-root .om-sort-btns .om-sort-no.picked{border-color:rgba(196,181,253,.95);background:rgba(167,139,250,.24);color:#FFFFFF;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 26px -8px var(--glowA)}
+.om-root .om-sort-btns button.picked:disabled{opacity:1}
+.om-sort-msg{margin:-4px 0 0;min-height:22px;text-align:center;font-family:'Manrope',sans-serif;font-size:14px;font-weight:800;line-height:1.5;color:#B8F5DC;
+  opacity:0;transform:translateY(4px);transition:opacity var(--d2) var(--e-out),transform var(--d2) var(--e-out)}
+.om-sort-msg.on{opacity:1;transform:none}
+.om-sort-msg.drop{color:#DDD6FE}
+.om-sort-msg.wrong{color:#FFE3A3}
+@media (prefers-reduced-motion: reduce){
+  .om-sort-card,.om-sort-card.om-enter{animation:none;transition:none}
+  .om-sort-q,.om-sort-dots span,.om-sort-msg,.om-root .om-sort-btns .om-sort-yes,.om-root .om-sort-btns .om-sort-no{transition:none}
+  .om-sort-msg{transform:none}
+}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1728,11 +1744,12 @@ body{margin:0;background:#07070B}
 <div class="om-sort">
 <sc-for list="{{pl.sortCards}}" as="c" hint-placeholder-count="1"><div class="om-sort-card om-enter {{pl.sortCardCls}}" style="background: {{pl.cardArt}}" aria-live="polite">
 <span class="om-sort-q">“{{c.t}}”</span>
-<sc-if value="{{pl.sortHasFb}}" hint-placeholder-val="{{false}}"><span class="om-sort-fb om-fade-in" role="status">{{pl.sortFb}}</span></sc-if>
+
 </div></sc-for>
+<p class="om-sort-msg {{pl.sortMsgCls}}" role="status" aria-live="polite" aria-atomic="true">{{pl.sortMsg}}</p>
 <div class="om-sort-btns">
-<button class="om-tap om-sort-yes" onClick="{{pl.sortYes}}" disabled="{{pl.sortLock}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.6"><path d="m5 12 5 5 9-10"></path></svg><span>{{pl.yesLbl}}</span></button>
-<button class="om-tap om-sort-no" onClick="{{pl.sortNo}}" disabled="{{pl.sortLock}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg><span>{{pl.noLbl}}</span></button>
+<button class="om-tap om-sort-yes {{pl.yesCls}}" onClick="{{pl.sortYes}}" disabled="{{pl.sortLock}}" aria-pressed="{{pl.yesOn}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.6"><path d="m5 12 5 5 9-10"></path></svg><span>{{pl.yesLbl}}</span></button>
+<button class="om-tap om-sort-no {{pl.noCls}}" onClick="{{pl.sortNo}}" disabled="{{pl.sortLock}}" aria-pressed="{{pl.noOn}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"></path></svg><span>{{pl.noLbl}}</span></button>
 </div>
 </div>
 </sc-if>
@@ -8487,6 +8504,41 @@ Stats.bestStreak = function (hist) {
     home.unlockAria = fill(T.unlockAria, { n: this.exName(rec) });
     home.unlock = function () { self.openEx(rec); };
     if (home.weekAria) home.weekAria = home.weekAria.replace(/^[^:]*:/, T.last7 + ', ' + String(T.hScore).toLowerCase() + ':');
+    return v;
+  };
+})();
+
+
+/* ---------- v41 · Anti-Tilt sort: short line under the card, ~700 ms, then the next thought ---------- */
+var AT41_TXT = {
+  it: { okYes: 'Giusto: questo lo controlli tu', okNo: 'Lascialo andare: non dipende da te', wrongYes: 'Non dipende da te: lascialo andare', wrongNo: 'Questo lo controlli tu: tienilo' },
+  en: { okYes: 'Right: this one is yours to control', okNo: 'Let it go: it’s not up to you', wrongYes: 'Not up to you: let it go', wrongNo: 'This one you control: keep it' }
+};
+Object.keys(AT41_TXT).forEach(function (l) { MECH_TXT[l] = Object.assign(MECH_TXT[l] || {}, AT41_TXT[l]); });
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origAnswer = P.sortAnswer;
+  var SHOW_MS = 700, WRONG_SHOW_MS = 1000;
+  P.sortAnswer = function (a) {
+    var self = this, s = this.state, e = EXI[s.exId], q = s.ix || {}, c = exX(e, this.cl()).cards[q.i];
+    if (!c || q.pending != null || s.paused) return;
+    origAnswer.apply(this, arguments);                       // sets pending / ok / fb and schedules the next card
+    var ok = c[1] === a;
+    clearTimeout(this._sortT);                                // same step, shorter pause
+    this._sortT = setTimeout(function () {
+      var q2 = self.state.ix; if (!q2 || q2._id !== e.id || q2.pending == null) return;
+      self.setIx({ i: q2.i + 1, pending: null, fb: '', keep: c[1] ? q2.keep.concat([c[0]]) : q2.keep });
+    }, ok ? SHOW_MS : WRONG_SHOW_MS);
+  };
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, e = EXI[s.exId];
+    if (s.screen === 'player' && v.pl && e && e.k === 'sort') {
+      var pl = v.pl, ix = s.ix && s.ix._id === e.id ? s.ix : {}, pend = ix.pending != null;
+      pl.yesOn = pend && ix.pending === 1; pl.noOn = pend && ix.pending === 0;
+      pl.yesCls = pl.yesOn ? 'picked' : ''; pl.noCls = pl.noOn ? 'picked' : '';
+      pl.sortMsg = pend ? ix.fb : '';
+      pl.sortMsgCls = pend ? 'on' + (ix.ok ? (ix.pending ? '' : ' drop') : ' wrong') : '';
+    }
     return v;
   };
 })();
