@@ -1136,6 +1136,14 @@ body{margin:0;background:#07070B}
 .om-cont{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px}
 .om-cont .ico{width:44px;height:44px;border-radius:50%}
 .om-cont-tx{flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+/* ---- v40: Home · Il tuo percorso ---- */
+.om-root .om-unlock{display:inline-flex;align-items:center;gap:4px;min-height:44px;margin:0;padding:2px 0;border:0;background:none;
+  color:var(--accT);font:inherit;font-size:12.5px;font-weight:800;line-height:1.3;text-align:left;cursor:pointer;border-radius:8px}
+.om-root .om-unlock svg{flex-shrink:0}
+.om-bar b{position:relative}
+.om-bar.today b::after{content:"";position:absolute;left:50%;top:calc(100% + 3px);width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--accM);box-shadow:0 0 6px var(--glowA)}
+.om-bar.today.none i::after{background:color-mix(in srgb,var(--accM) 30%,var(--trk));box-shadow:0 0 0 1px color-mix(in srgb,var(--accM) 70%,transparent)}
+.om-bars{padding-bottom:7px}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1458,12 +1466,12 @@ body{margin:0;background:#07070B}
 <section class="card om-path om-enter" aria-labelledby="om-path-t">
 <div class="om-path-head"><h2 id="om-path-t" class="om-h3">{{home.pathT}}</h2><button class="om-tap btn-t" onClick="{{toStats}}" style="color: var(--accT)!important; padding: 0 10px; min-height: 36px">{{T.seeAll}}</button></div>
 <div class="om-prog">
-<div class="om-prog-score"><span aria-hidden="true" class="om-ring om-ring16" style="--p: {{scorePct}}">{{score}}</span><span class="om-prog-tx"><span class="om-prog-k">{{home.scoreL}}<span class="sr"> {{score}}/100</span></span><span class="om-sd {{home.scoreCls}}" aria-label="{{trendAria}}">{{home.scoreSub}}</span></span></div>
+<div class="om-prog-score"><span aria-hidden="true" class="om-ring om-ring16" style="--p: {{scorePct}}">{{score}}</span><span class="om-prog-tx"><span class="om-prog-k">{{home.scoreL}}<sc-if value="{{home.hasScore}}" hint-placeholder-val="{{true}}"><span class="sr"> {{score}}/100</span></sc-if></span><sc-if value="{{home.hasScore}}" hint-placeholder-val="{{true}}"><span class="om-sd {{home.scoreCls}}" aria-label="{{trendAria}}">{{home.scoreSub}}</span></sc-if><sc-if value="{{home.noScore}}" hint-placeholder-val="{{false}}"><button class="om-tap om-unlock" onClick="{{home.unlock}}" aria-label="{{home.unlockAria}}">{{T.unlockScore}}<svg class="om-i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.6"><path d="m9 18 6-6-6-6"></path></svg></button></sc-if></span></div>
 <div class="om-bars" role="img" aria-label="{{home.weekAria}}"><sc-for list="{{home.week}}" as="d" hint-placeholder-count="7"><span class="om-bar {{d.cls}}"><i style="--h: {{d.h}}"></i><b>{{d.l}}</b></span></sc-for></div>
 </div>
 <div class="om-prog-mini">
 <div class="om-mini16"><span aria-hidden="true" class="om-ring" style="--p: {{ux.goalPct}}; --c1: var(--ok); --c2: #12C99B; width: 40px; height: 40px; font-size: 11px">{{ux.goalFrac}}</span><span><span class="om-sl">{{home.goalL}}</span><span class="sr">{{ux.todayLine}}</span><span class="om-sd mute" aria-hidden="true">{{home.goalSub}}</span></span></div>
-<div class="om-mini16"><span aria-hidden="true" class="om-ring" style="--p: 100%; --c1: #FF9A3D; --c2: #FF4D8D; width: 40px; height: 40px; font-size: 14px">{{streak}}</span><span><span class="om-sl">{{T.streakDays}}</span><span class="om-sd mute">{{home.streakSub}}</span></span></div>
+<div class="om-mini16"><span aria-hidden="true" class="om-ring" style="--p: {{home.streakPct}}; --c1: #FF9A3D; --c2: #FF4D8D; width: 40px; height: 40px; font-size: 14px">{{streak}}</span><span><span class="om-sl">{{T.streakDays}}<span class="sr">: {{streak}}</span></span><span class="om-sd mute">{{home.streakSub}}</span></span></div>
 </div>
 </section>
 
@@ -8434,6 +8442,51 @@ var CONT_QUICK_EX = 'quickbreath';
       c.aria = fill(T.contStart, { n: T.quickT }); c.start = function () { self.startEx(id, 'home'); };
     }
     v.home.cont = c;
+    return v;
+  };
+})();
+
+
+/* ---------- v40 · Home "Il tuo percorso": streak ring in proportion, record, score unlock, week label ---------- */
+var PATH40_TXT = {
+  it: { stRecord: 'Record: {n}', unlockScore: 'Fai 1 esercizio per sbloccare il tuo score', unlockAria: 'Fai 1 esercizio per sbloccare il tuo score: apri {n}', last7: 'Ultimi 7 giorni' },
+  en: { stRecord: 'Best: {n}', unlockScore: 'Do 1 exercise to unlock your score', unlockAria: 'Do 1 exercise to unlock your score: open {n}', last7: 'Last 7 days' },
+  es: { stRecord: 'Récord: {n}', unlockScore: 'Haz 1 ejercicio para desbloquear tu puntuación', unlockAria: 'Haz 1 ejercicio para desbloquear tu puntuación: abrir {n}', last7: 'Últimos 7 días' },
+  fr: { stRecord: 'Record : {n}', unlockScore: 'Fais 1 exercice pour débloquer ton score', unlockAria: 'Fais 1 exercice pour débloquer ton score : ouvrir {n}', last7: '7 derniers jours' },
+  de: { stRecord: 'Rekord: {n}', unlockScore: 'Mach 1 Übung, um deinen Score freizuschalten', unlockAria: 'Mach 1 Übung, um deinen Score freizuschalten: {n} öffnen', last7: 'Letzte 7 Tage' },
+  pt: { stRecord: 'Recorde: {n}', unlockScore: 'Faça 1 exercício para desbloquear sua pontuação', unlockAria: 'Faça 1 exercício para desbloquear sua pontuação: abrir {n}', last7: 'Últimos 7 dias' },
+  zh: { stRecord: '最长：{n}', unlockScore: '完成 1 个练习即可解锁你的分数', unlockAria: '完成 1 个练习即可解锁你的分数：打开{n}', last7: '最近 7 天' },
+  ja: { stRecord: '最長：{n}', unlockScore: '1つ練習してスコアを解放しよう', unlockAria: '1つ練習してスコアを解放しよう：{n}を開く', last7: '過去7日間' },
+  ko: { stRecord: '최고: {n}', unlockScore: '연습 1개를 하면 점수가 열려요', unlockAria: '연습 1개를 하면 점수가 열려요: {n} 열기', last7: '최근 7일' }
+};
+Object.keys(PATH40_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, PATH40_TXT[l]); });
+var STREAK_FULL = 7;
+/* longest run of consecutive days with a completed exercise */
+Stats.bestStreak = function (hist) {
+  var self = this, days = {};
+  (hist || []).forEach(function (h) { if (h.type === 'ex' && !h.partial) days[self.day0(h.at)] = true; });
+  var best = 0;
+  Object.keys(days).forEach(function (k) {
+    var d = +k; if (days[self.addDays(d, -1)]) return;          // only from the first day of a run
+    var n = 0; while (days[d]) { n++; d = self.addDays(d, 1); }
+    if (n > best) best = n;
+  });
+  return best;
+};
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this;
+    if (s.screen !== 'home' || !v.home) return v;
+    var home = v.home, hist = s.history || [], n = +v.streak || 0, best = Math.max(n, Stats.bestStreak(hist));
+    home.streakPct = Math.round(Math.min(1, n / STREAK_FULL) * 100) + '%';
+    home.streakSub = fill(T.stRecord, { n: best });
+    home.hasScore = v.score !== '—' && v.score != null; home.noScore = !home.hasScore;
+    var rec = (v.ux && v.ux.heroList && v.ux.heroList[0] && v.ux.heroList[0].id) || CONT_QUICK_EX;
+    home.unlockAria = fill(T.unlockAria, { n: this.exName(rec) });
+    home.unlock = function () { self.openEx(rec); };
+    if (home.weekAria) home.weekAria = home.weekAria.replace(/^[^:]*:/, T.last7 + ', ' + String(T.hScore).toLowerCase() + ':');
     return v;
   };
 })();
