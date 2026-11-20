@@ -1334,7 +1334,7 @@ body{margin:0;background:#07070B}
 </div>
 <sc-for list="{{gp.rr}}" as="r" hint-placeholder-count="1">
 <div style="display: flex; flex-direction: column; gap: 8px">
-<h3 class="lbl" style="margin: 0">{{r.n}}</h3>
+<h3 class="lbl" style="margin: 0; display: flex; align-items: center; gap: 8px"><sc-if value="{{r.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{r.art}}" alt="" width="20" height="20" style="width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; display: block; border-radius: 6px"></sc-if>{{r.n}}</h3>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <label class="fld">{{T.rank}}<input class="inp" value="{{r.rank}}" onChange="{{r.onRank}}" placeholder="{{T.rankPh}}" aria-label="{{r.rankA}}"></label>
 <label class="fld">{{T.role}}<input class="inp" value="{{r.role}}" onChange="{{r.onRole}}" placeholder="{{T.rolePh}}" aria-label="{{r.roleA}}"></label>
@@ -2247,7 +2247,7 @@ body{margin:0;background:#07070B}
 <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0">
 <h1 class="h1" style="font-size: 21px">{{displayName}}</h1>
 <span style="font-size: 13px; font-weight: 700; color: var(--tx2)">@{{pf.username}}</span>
-<span style="align-self: flex-start; padding: 5px 10px; border-radius: 10px; background: var(--s2); border: 1px solid var(--line); font-size: 12px; font-weight: 800">{{ux.gameLine}}</span>
+<span style="align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 10px; background: var(--s2); border: 1px solid var(--line); font-size: 12px; font-weight: 800"><sc-if value="{{ux.gm.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{ux.gm.art}}" alt="" width="16" height="16" style="width: 16px; height: 16px; flex-shrink: 0; object-fit: contain; display: block; border-radius: 6px"></sc-if>{{ux.gameLine}}</span>
 </div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
@@ -2313,7 +2313,7 @@ body{margin:0;background:#07070B}
 </div></div>
 <sc-for list="{{gp.rr}}" as="r" hint-placeholder-count="1">
 <div style="display: flex; flex-direction: column; gap: 8px">
-<h3 class="lbl" style="margin: 0">{{r.n}}</h3>
+<h3 class="lbl" style="margin: 0; display: flex; align-items: center; gap: 8px"><sc-if value="{{r.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{r.art}}" alt="" width="20" height="20" style="width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; display: block; border-radius: 6px"></sc-if>{{r.n}}</h3>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
 <label class="fld">{{T.rank}}<input class="inp" value="{{r.rank}}" onChange="{{r.onRank}}" placeholder="{{T.rankPh}}" aria-label="{{r.rankA}}"></label>
 <label class="fld">{{T.role}}<input class="inp" value="{{r.role}}" onChange="{{r.onRole}}" placeholder="{{T.rolePh}}" aria-label="{{r.roleA}}"></label>
@@ -2515,7 +2515,7 @@ body{margin:0;background:#07070B}
 <h2 class="lbl" style="margin: 0">{{T.sesGame}}</h2>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
 <sc-for list="{{ses.games}}" as="g" hint-placeholder-count="8">
-<button class="om-tap chip" onClick="{{g.pick}}" aria-pressed="{{g.on}}" style="height: 56px; border-radius: 18px"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 11px; background: {{g.markBg}}; color: {{g.c}}; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{g.m}}</span><span style="white-space: normal; line-height: 1.2; text-align: left">{{g.n}}</span></button>
+<button class="om-tap chip" onClick="{{g.pick}}" aria-pressed="{{g.on}}" style="height: 56px; border-radius: 18px"><span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; overflow: hidden; border-radius: 11px; background: {{g.markBg}}; color: {{g.c}}; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center"><sc-if value="{{g.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{g.art}}" alt="" width="24" height="24" style="width: 24px; height: 24px; object-fit: contain; display: block"></sc-if><sc-if value="{{g.noArt}}" hint-placeholder-val="{{true}}">{{g.m}}</sc-if></span><span style="white-space: normal; line-height: 1.2; text-align: left">{{g.n}}</span></button>
 </sc-for>
 </div>
 </div>
@@ -2557,7 +2557,7 @@ body{margin:0;background:#07070B}
 </div>
 <div class="om-scroll" style="flex-grow: 1; min-height: 0; padding: 18px 20px; display: flex; flex-direction: column; gap: 18px">
 <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; padding-top: 18px">
-<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; font-size: 15px; font-weight: 800">{{ses.game}}<span style="padding: 5px 11px; border-radius: 999px; background: var(--s2); border: 1px solid var(--line); font-size: 12px; font-weight: 800">{{ses.goal}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; font-size: 15px; font-weight: 800"><sc-if value="{{ses.gm.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{ses.gm.art}}" alt="" width="20" height="20" style="width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; display: block; border-radius: 6px"></sc-if>{{ses.game}}<span style="padding: 5px 11px; border-radius: 999px; background: var(--s2); border: 1px solid var(--line); font-size: 12px; font-weight: 800">{{ses.goal}}</span></span>
 <span role="timer" aria-label="{{ses.timeAria}}" class="om-stime">{{ses.time}}</span>
 <p class="om-ssub">{{sv.line}}</p>
 </div>
@@ -8223,7 +8223,7 @@ Object.keys(HELP34).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}
 /* ---------- v35 · gaming profile: lists of games and player types ---------- */
 /* Image slot for each game. Leave null until a licensed asset is available (data: URI or a file published with
    the page): the card then shows the image instead of the text mark. Never hot-link third-party URLs. */
-var GAME_ART = { val: null, fn: null, lol: null, cs2: null, apex: null, ow2: null, rl: null, fc: null };
+var GAME_ART = {"val": null, "fn": null, "lol": null, "cs2": null, "apex": null, "ow2": null, "rl": null, "fc": null};
 var GP35_TXT = {
   it: { gpGamesT: 'I tuoi giochi · anche più di uno', gpTypesT: 'Tipo di player · anche più di uno', gpRankA: 'Rank in {g}', gpRoleA: 'Ruolo in {g}' },
   en: { gpGamesT: 'Your games · pick as many as you like', gpTypesT: 'Player type · pick as many as you like', gpRankA: 'Rank in {g}', gpRoleA: 'Role in {g}' }
@@ -8297,6 +8297,25 @@ function pfNeedsLists(pf) { return !!pf && !(Array.isArray(pf.games) && Array.is
           onRole: function (e) { var cur = pfLists(draft ? (self.state.pfDraft || self.state.pf) : self.state.pf), m = Object.assign({}, cur.roles); m[id] = e.target.value.slice(0, 40); set({ roles: m }); } };
       }) };
     v.pf = Object.assign({}, v.pf || {}, pf);
+    return v;
+  };
+})();
+
+
+/* ---------- v36 · one game-image source for every screen ---------- */
+function gameArt(idOrName) {
+  var g = GAMES.filter(function (x) { return x.id === idOrName || x.n === idOrName; })[0];
+  var art = g ? GAME_ART[g.id] : null;
+  return { id: g ? g.id : '', art: art || '', hasArt: !!art, noArt: !art };
+}
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state;
+    if (v.ses && v.ses.games) v.ses.games.forEach(function (g) { Object.assign(g, gameArt(g.key)); });
+    if (v.gp && v.gp.rr) v.gp.rr.forEach(function (r) { Object.assign(r, gameArt(r.key.replace(/^rr-/, ''))); });
+    if (v.ux) v.ux.gm = gameArt((s.pf && s.pf.game) || '');
+    if (v.ses) v.ses.gm = gameArt(s.session ? s.session.game : '');
     return v;
   };
 })();
