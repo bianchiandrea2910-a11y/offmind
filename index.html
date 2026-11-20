@@ -1220,6 +1220,13 @@ body{margin:0;background:#07070B}
 .om-guest-card{padding:18px;display:flex;flex-direction:column;gap:12px;background:radial-gradient(120% 100% at 0% 0%,rgba(214,60,242,.16) 0%,rgba(0,0,0,0) 60%),var(--card)}
 .om-guest-t{margin:0;font-size:16px;font-weight:800;line-height:1.35;text-wrap:balance}
 .om-guest-card .btn-t{align-self:center}
+/* ---- v48: live session · end button + summary in the confirmation sheet ---- */
+.om-root .om-ses-endbtn{margin-top:2px}
+.om-msum{margin:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:12px 4px;border-radius:18px;background:var(--s1);border:1px solid var(--line)}
+.om-msum-i{display:flex;flex-direction:column-reverse;align-items:center;gap:2px;text-align:center;min-width:0}
+.om-msum-i + .om-msum-i{border-left:1px solid var(--line)}
+.om-msum dt{font-size:11px;font-weight:700;color:var(--tx2)}
+.om-msum dd{margin:0;font-family:'Unbounded',sans-serif;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -2696,7 +2703,7 @@ body{margin:0;background:#07070B}
 <sc-if value="{{sv.paused}}" hint-placeholder-val="{{false}}">
 <button class="om-tap btn-p om-fade-in" onClick="{{sv.toggle}}" style="height: 64px; font-size: 15px"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>{{sv.resumeBig}}</button>
 </sc-if>
-<button class="om-tap btn-t" onClick="{{sv.askEnd}}" style="min-height: 52px">{{T.sesEnd}}</button>
+<button class="om-tap btn-s om-ses-endbtn" onClick="{{sv.askEnd}}" aria-haspopup="dialog"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2.5"></rect></svg>{{T.sesEnd}}</button>
 </div>
 </div>
 </sc-if>
@@ -2794,6 +2801,7 @@ body{margin:0;background:#07070B}
 <div aria-hidden="true" style="align-self: center; width: 38px; height: 5px; margin: -8px 0 2px; border-radius: 3px; background: var(--trk)"></div>
 <h2 id="om-modal-t" class="h2" style="font-size: 19px">{{modal.t}}</h2>
 <p id="om-modal-b" class="sub">{{modal.b}}</p>
+<sc-if value="{{modal.hasSum}}" hint-placeholder-val="{{false}}"><dl class="om-msum"><sc-for list="{{modal.sum}}" as="m" hint-placeholder-count="3"><div class="om-msum-i"><dt>{{m.k}}</dt><dd>{{m.v}}</dd></div></sc-for></dl></sc-if>
 <sc-if value="{{modal.needsType}}" hint-placeholder-val="{{false}}"><label class="fld">{{modal.typeLabel}}<input class="inp" value="{{modalInput}}" onChange="{{onModalInput}}" autocomplete="off"></label></sc-if>
 <button class="om-tap btn-d" onClick="{{modalConfirm}}" disabled="{{modal.blocked}}" style="background: {{modal.cBg}}; --mc: {{modal.cC}}">{{modal.c}}</button>
 <sc-if value="{{modalCancel}}" hint-placeholder-val="{{true}}"><button class="om-tap btn-s" onClick="{{closeModal}}" autofocus="{{true}}">{{modalCancelL}}</button></sc-if>
@@ -8776,6 +8784,65 @@ Object.keys(GUEST47_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] 
           };
         });
       });
+    }
+    return v;
+  };
+})();
+
+
+/* ---------- v48 · end the live session from a confirmation sheet with its summary ---------- */
+var SES48_TXT = {
+  it: { sEndB2: 'La salvo nelle tue statistiche. Subito dopo puoi aggiungere come ti senti.', sEndSave: 'Termina e salva', sEndKeep: 'Continua sessione', sSumDur: 'Durata' },
+  en: { sEndB2: 'I’ll save it to your stats. Right after, you can add how you feel.', sEndSave: 'End and save', sEndKeep: 'Keep playing', sSumDur: 'Duration' },
+  es: { sEndB2: 'La guardo en tus estadísticas. Justo después puedes añadir cómo te sientes.', sEndSave: 'Terminar y guardar', sEndKeep: 'Seguir la sesión', sSumDur: 'Duración' },
+  fr: { sEndB2: 'Je l’enregistre dans tes statistiques. Juste après, tu peux dire comment tu te sens.', sEndSave: 'Terminer et enregistrer', sEndKeep: 'Continuer la session', sSumDur: 'Durée' },
+  de: { sEndB2: 'Ich speichere sie in deinen Statistiken. Danach kannst du sagen, wie du dich fühlst.', sEndSave: 'Beenden und speichern', sEndKeep: 'Session fortsetzen', sSumDur: 'Dauer' },
+  pt: { sEndB2: 'Eu salvo nas suas estatísticas. Logo depois você pode dizer como se sente.', sEndSave: 'Encerrar e salvar', sEndKeep: 'Continuar sessão', sSumDur: 'Duração' },
+  zh: { sEndB2: '我会把它保存到你的统计中。之后你可以补充感受。', sEndSave: '结束并保存', sEndKeep: '继续会话', sSumDur: '时长' },
+  ja: { sEndB2: '統計に保存します。そのあと気分を追加できます。', sEndSave: '終了して保存', sEndKeep: 'セッションを続ける', sSumDur: '時間' },
+  ko: { sEndB2: '통계에 저장할게요. 바로 다음에 기분을 추가할 수 있어요.', sEndSave: '종료하고 저장', sEndKeep: '세션 계속하기', sSumDur: '시간' }
+};
+Object.keys(SES48_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, SES48_TXT[l]); });
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origEnd = P.sesEnd;
+  /* end + save the record at once; the review screen only completes it */
+  P.sesEndSave = function () {
+    var ses = this.state.session; if (!ses) return;
+    origEnd.call(this);
+    this.setState(function (s) {
+      var e = s.sesEnded; if (!e || e.hid) return null;
+      var hid = uid(), rec = { id: hid, type: 'session', game: e.game, dur: e.end - e.start, resets: e.resets, breaks: e.breaks, mood: null, tilt: null, at: e.end };
+      return { sesEnded: Object.assign({}, e, { hid: hid }), history: [rec].concat(s.history) };
+    });
+  };
+  P.sesReview = function () {                                    // mood / tilt added to the saved entry
+    var T = this.T();
+    this.setState(function (s) {
+      var e = s.sesEnded; if (!e || e.saved) return null;
+      var m = s.sesMood, at = Date.now(), hist = s.history.map(function (h) { return h.id === e.hid ? Object.assign({}, h, { mood: m, tilt: s.sesTilt }) : h; });
+      if (m) hist = [{ id: uid(), type: 'checkin', stateId: m, at: at }].concat(hist);
+      return { sesEnded: Object.assign({}, e, { saved: true }), history: hist, checkin: m ? { id: m, at: at } : s.checkin };
+    });
+    this.toast(T.sesSaved);
+  };
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this;
+    if (s.sesModal === 'end' && s.session && v.modal) {
+      var ses = s.session, now = Date.now();
+      v.modal = { t: T.sEndQ, b: T.sEndB2, c: T.sEndSave, needsType: false, blocked: false, cBg: '', cC: '', hasSum: true,
+        sum: [[T.sSumDur, fmtLong(this.sesPlayed(ses, now), T)], [T.sesResets, String(ses.resets || 0)], [T.sesBreaks, String(ses.breaks || 0)]].map(function (r, i) { return { key: 'ms' + i, k: r[0], v: r[1] }; }) };
+      v.modalCancel = true; v.modalCancelL = T.sEndKeep;
+      v.modalConfirm = function () { self.sesEndSave(); };
+    } else if (v.modal) { v.modal.hasSum = false; }
+    var e = s.sesEnded;
+    if (e && e.hid && v.ses) {
+      v.ses.save = function () { self.sesReview(); self.tab('home'); };
+      v.ses.cool = function () { if (self.state.sesMood && self.state.sesTilt) self.sesReview(); self.startEx(SES_COOL_EX, 'home'); };
+      if (s.sesModal === 'discard') v.modalConfirm = function () {     // "Chiudi senza salvare": the entry goes away again
+        self.setState(function (st) { return { history: st.history.filter(function (h) { return h.id !== e.hid; }), sesEnded: Object.assign({}, st.sesEnded, { hid: null }), sesModal: null, modalOut: false }; });
+        v.ses.skip();
+      };
     }
     return v;
   };
