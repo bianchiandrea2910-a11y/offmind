@@ -1132,6 +1132,10 @@ body{margin:0;background:#07070B}
 .om-paynote.hl{border-color:#FBBF24;box-shadow:0 0 0 3px color-mix(in srgb,#FBBF24 28%,transparent)}
 @media (max-width:360px){.om-pack-price{min-width:84px;padding:0 12px}}
 @media (prefers-reduced-motion:reduce){.om-paynote{transition:none}}
+/* ---- v39: Home · Continua ---- */
+.om-cont{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px}
+.om-cont .ico{width:44px;height:44px;border-radius:50%}
+.om-cont-tx{flex-grow:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1445,20 +1449,11 @@ body{margin:0;background:#07070B}
 </sc-if>
 </section>
 
-<div class="om-qa">
-<button class="om-tap card om-qcard tilt om-enter" onClick="{{home.tiltStart}}" style="--qt: #FF6B9A">
-<span aria-hidden="true" class="om-qart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg></span>
-<span aria-hidden="true" class="om-qic glass"><svg class="om-i" width="22" height="22" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"></path><path d="M9 12l2 2 4-4"></path></svg></span>
-<span aria-hidden="true" class="om-qgo"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg></span>
-<span class="om-qtx"><span class="om-qt">{{home.tilt.name}}</span><span class="om-qs">{{home.tilt.dur}} · {{home.tiltSub}}</span></span>
-</button>
-<button class="om-tap card om-qcard nova om-enter" onClick="{{toNova}}" style="--qt: #9B8CFF">
-<span aria-hidden="true" class="om-qart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"><path d="M10 4l1.6 4.6L16 10l-4.4 1.4L10 16l-1.6-4.6L4 10l4.4-1.4z"></path><path d="M18 3l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"></path></svg></span>
-<span aria-hidden="true" class="om-qic" style="background: none; box-shadow: none"><span class="om-novaorb" style="width: 46px; height: 46px"></span></span>
-<span aria-hidden="true" class="om-qgo"><svg class="om-i" width="16" height="16" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></svg></span>
-<span class="om-qtx"><span class="om-qt">NOVA</span><span class="om-qs">{{home.novaSub}}</span></span>
-</button>
-</div>
+<section class="card om-cont om-enter" aria-labelledby="om-cont-t">
+<span aria-hidden="true" class="ico" style="background: {{home.cont.tile}}"><svg class="om-i" width="22" height="22" viewBox="0 0 24 24"><path d="{{home.cont.ic}}"></path></svg></span>
+<span class="om-cont-tx"><span class="lbl" style="color: var(--accT)">{{home.cont.lbl}}</span><span id="om-cont-t" class="om-clip" style="font-size: 15px; font-weight: 800">{{home.cont.name}}</span><span class="om-clip" style="font-size: 12px; font-weight: 600; color: var(--tx3)">{{home.cont.meta}}</span></span>
+<button class="om-tap om-cbtn pri" onClick="{{home.cont.start}}" aria-label="{{home.cont.aria}}"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg></button>
+</section>
 
 <section class="card om-path om-enter" aria-labelledby="om-path-t">
 <div class="om-path-head"><h2 id="om-path-t" class="om-h3">{{home.pathT}}</h2><button class="om-tap btn-t" onClick="{{toStats}}" style="color: var(--accT)!important; padding: 0 10px; min-height: 36px">{{T.seeAll}}</button></div>
@@ -8362,6 +8357,83 @@ Object.keys(WEB38_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] ||
       };
     }
     if (v.shop && v.shop.packs) v.shop.packs.forEach(function (p) { p.payOff = web; p.payOn = !web; });
+    return v;
+  };
+})();
+
+
+/* ---------- v39 · Home "Continua": resume the last unfinished exercise, or a 60 s breathing reset ---------- */
+var CONT39_TXT = {
+  it: { contL: 'Continua', quickL: 'Esercizio rapido · {d}', quickT: 'Reset respiro', left1: '{t} rimasto', leftN: '{t} rimasti', contResume: 'Riprendi {n}', contStart: 'Avvia {n}' },
+  en: { contL: 'Continue', quickL: 'Quick exercise · {d}', quickT: 'Breathing reset', left1: '{t} left', leftN: '{t} left', contResume: 'Resume {n}', contStart: 'Start {n}' },
+  es: { contL: 'Continuar', quickL: 'Ejercicio rápido · {d}', quickT: 'Reset de respiración', left1: 'Queda {t}', leftN: 'Quedan {t}', contResume: 'Reanudar {n}', contStart: 'Iniciar {n}' },
+  fr: { contL: 'Reprendre', quickL: 'Exercice rapide · {d}', quickT: 'Reset respiration', left1: 'Encore {t}', leftN: 'Encore {t}', contResume: 'Reprendre {n}', contStart: 'Lancer {n}' },
+  de: { contL: 'Fortsetzen', quickL: 'Schnelle Übung · {d}', quickT: 'Atem-Reset', left1: 'Noch {t}', leftN: 'Noch {t}', contResume: '{n} fortsetzen', contStart: '{n} starten' },
+  pt: { contL: 'Continuar', quickL: 'Exercício rápido · {d}', quickT: 'Reset de respiração', left1: 'Falta {t}', leftN: 'Faltam {t}', contResume: 'Retomar {n}', contStart: 'Iniciar {n}' },
+  zh: { contL: '继续', quickL: '快速练习 · {d}', quickT: '呼吸重置', left1: '剩余 {t}', leftN: '剩余 {t}', contResume: '继续{n}', contStart: '开始{n}' },
+  ja: { contL: '続ける', quickL: 'クイック練習 · {d}', quickT: '呼吸リセット', left1: '残り {t}', leftN: '残り {t}', contResume: '{n}を再開', contStart: '{n}を開始' },
+  ko: { contL: '이어서 하기', quickL: '빠른 연습 · {d}', quickT: '호흡 리셋', left1: '{t} 남음', leftN: '{t} 남음', contResume: '{n} 이어하기', contStart: '{n} 시작' }
+};
+Object.keys(CONT39_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, CONT39_TXT[l]); });
+var CONT_QUICK_EX = 'quickbreath';
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origStart = P.startEx, origFinish = P.finish, origExit = P.exitPlayer;
+
+  /* the newest exercise stopped half-way that has not been completed since */
+  P.contItem = function () {
+    var done = {}, hist = this.state.history || [];
+    for (var i = 0; i < hist.length; i++) {
+      var h = hist[i]; if (h.type !== 'ex' || !EXI[h.exId]) continue;
+      if (!h.partial) { done[h.exId] = true; continue; }
+      if (!done[h.exId] && (h.secs || 0) < EXI[h.exId].sec) return h;
+    }
+    return null;
+  };
+  P.contResume = function (h) {
+    var e = EXI[h.exId];
+    this.startEx(h.exId, 'home');
+    this.setState({ remaining: Math.max(1, e.sec - (h.secs || 0)), resumeOf: { hid: h.id, secs: h.secs || 0 } });
+  };
+
+  /* a normal start never carries a resume */
+  P.startEx = function () { this.setState({ resumeOf: null }); return origStart.apply(this, arguments); };
+  /* completed after a resume: the earlier interrupted part is folded into the completed entry */
+  P.finish = function () {
+    var p = origFinish.apply(this, arguments), ro = this.state.resumeOf;
+    if (ro && p) {
+      p.minutes = (p.minutes || 0) - ro.secs / 60;
+      p.history = (p.history || []).filter(function (h) { return h.id !== ro.hid; });
+      p.resumeOf = null;
+    }
+    return p;
+  };
+  /* stopped again after a resume: one interrupted entry with the total time, minutes counted once */
+  P.exitPlayer = function () {
+    var ro = this.state.resumeOf, inPlayer = this.state.screen === 'player';
+    var r = origExit.apply(this, arguments);
+    if (ro) this.setState(function (s) {
+      var top = s.history[0], added = inPlayer && top && top.partial && top.id !== ro.hid;
+      if (!added || !s.history.some(function (h) { return h.id === ro.hid; })) return { resumeOf: null };
+      return { resumeOf: null, minutes: s.minutes - ro.secs / 60, history: s.history.filter(function (h) { return h.id !== ro.hid; }) };
+    });
+    return r;
+  };
+
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this;
+    if (s.screen !== 'home' || !v.home) return v;
+    var h = this.contItem(), id = h ? h.exId : CONT_QUICK_EX, e = EXI[id], name = this.exName(id), c = {};
+    c.tile = solid(e.hue); c.ic = e.ic;
+    if (h) {
+      var rem = Math.max(1, Math.round(e.sec - (h.secs || 0))), mins = Math.ceil(rem / 60), t = rem < 60 ? rem + ' ' + T.sec : mins + ' ' + T.min, one = rem < 60 ? rem === 1 : mins === 1;
+      c.lbl = T.contL; c.name = name; c.meta = fill(one ? T.left1 : T.leftN, { t: t });
+      c.aria = fill(T.contResume, { n: name }); c.start = function () { self.contResume(h); };
+    } else {
+      c.lbl = fill(T.quickL, { d: e.sec + ' s' }); c.name = T.quickT; c.meta = name;
+      c.aria = fill(T.contStart, { n: T.quickT }); c.start = function () { self.startEx(id, 'home'); };
+    }
+    v.home.cont = c;
     return v;
   };
 })();
