@@ -1160,6 +1160,20 @@ body{margin:0;background:#07070B}
   .om-sort-q,.om-sort-dots span,.om-sort-msg,.om-root .om-sort-btns .om-sort-yes,.om-root .om-sort-btns .om-sort-no{transition:none}
   .om-sort-msg{transform:none}
 }
+/* ---- v42: Esercizi · featured "Per come ti senti" card ---- */
+.om-feat{display:flex;flex-direction:column;gap:2px;padding:14px 0 6px;overflow:hidden}
+.om-feat .om-feat-eye{padding:0 16px;color:var(--accT)}
+.om-feat-row{display:flex;align-items:stretch}
+.om-feat-row .om-ex-main{padding-top:10px}
+.om-feat-row .om-ex-side{padding-top:8px}
+.om-root .om-feat-more{align-self:flex-start;display:inline-flex;align-items:center;gap:4px;min-height:44px;margin:0 0 4px;padding:0 16px;border:0;background:none;
+  color:var(--accT);font:inherit;font-size:13.5px;font-weight:800;border-radius:12px;cursor:pointer}
+.om-root .om-feat-more[aria-pressed="true"]{color:var(--tx)}
+.om-feat-ci{gap:10px;padding:14px 16px 16px}
+.om-feat-ci .om-feat-eye{padding:0}
+.om-feat-ci-row{display:flex;align-items:flex-start;gap:14px}
+.om-feat-ci-row .ico{width:52px;height:52px;border-radius:50%}
+.om-root .om-feat-cta{width:auto;min-height:48px;align-self:stretch}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1507,20 +1521,33 @@ body{margin:0;background:#07070B}
 <p class="om-catsub">{{secSub}}</p>
 </div>
 
-<sc-if value="{{tr.hasQuick}}" hint-placeholder-val="{{true}}">
-<section class="om-quick" aria-labelledby="om-quick-t">
-<div class="om-sechead"><h2 id="om-quick-t" class="om-h3">{{tr.quickT}}</h2><span class="om-eyebrow">{{tr.quickSub}}</span></div>
-<div class="om-hx">
-<sc-for list="{{tr.quick}}" as="q" hint-placeholder-count="3">
-<div class="card om-qx om-enter" style="background: radial-gradient(120% 90% at 100% 0%, {{q.hue1}}33 0%, rgba(0,0,0,0) 60%), var(--card)">
-<button class="om-tap om-qx-main" onClick="{{q.open}}">
-<span aria-hidden="true" class="ico" style="background: {{q.tile}}"><svg class="om-i" width="22" height="22" viewBox="0 0 24 24"><path d="{{q.ic}}"></path></svg></span>
-<span class="om-qx-name">{{q.name}}</span>
+<sc-if value="{{tr.featOn}}" hint-placeholder-val="{{true}}">
+<sc-for list="{{tr.feat}}" as="fx" hint-placeholder-count="1">
+<section class="card om-feat om-enter" aria-labelledby="om-feat-t" style="background: radial-gradient(120% 90% at 100% 0%, {{fx.hue1}}33 0%, rgba(0,0,0,0) 60%), var(--card)">
+<span class="lbl om-feat-eye">{{tr.featEye}}</span>
+<div class="om-feat-row">
+<button class="om-tap om-ex-main" onClick="{{fx.open}}">
+<span aria-hidden="true" class="ico {{fx.coverCls}}" style="background: {{fx.tile}}"><svg class="om-i" width="24" height="24" viewBox="0 0 24 24"><path d="{{fx.ic}}"></path></svg></span>
+<span class="om-ex-tx"><span id="om-feat-t" class="om-ex-name">{{fx.name}}</span><span class="om-ex-goal">{{fx.goal}}</span>
+<span class="om-ex-meta"><span class="om-dur"><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{fx.dur}}</span><span class="om-ex-kind">{{fx.kindLbl}}</span></span></span>
 </button>
-<div class="om-qx-foot"><span class="om-dur"><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{q.dur}}</span><button class="om-tap om-cbtn pri" onClick="{{q.start}}" aria-label="{{q.startLbl}}"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg></button></div>
+<div class="om-ex-side">
+<button class="om-tap om-cbtn om-fav" onClick="{{fx.fav}}" aria-pressed="{{fx.isFav}}" aria-label="{{fx.favLabel}}" style="color: {{fx.favC}}"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: {{fx.favFill}}; stroke: currentColor; stroke-width: 2; stroke-linejoin: round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg></button>
+<button class="om-tap om-cbtn pri" onClick="{{fx.start}}" aria-label="{{fx.startLbl}}"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="fill: currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg></button>
 </div>
+</div>
+<sc-if value="{{tr.moreOn}}" hint-placeholder-val="{{true}}"><button class="om-tap om-feat-more" onClick="{{tr.moreToggle}}" aria-pressed="{{tr.morePressed}}" aria-controls="om-exlist">{{tr.moreL}}<svg class="om-i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><path d="{{tr.moreIc}}"></path></svg></button></sc-if>
+</section>
 </sc-for>
+</sc-if>
+<sc-if value="{{tr.inviteOn}}" hint-placeholder-val="{{false}}">
+<section class="card om-feat om-feat-ci om-enter" aria-labelledby="om-feat-ci-t">
+<span class="lbl om-feat-eye">{{T.trQuickRec}}</span>
+<div class="om-feat-ci-row">
+<span aria-hidden="true" class="ico" style="background: linear-gradient(145deg, var(--accM), var(--acc))"><svg class="om-i" width="22" height="22" viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"></path></svg></span>
+<span class="om-ex-tx"><span id="om-feat-ci-t" class="om-ex-name">{{T.ciInviteT}}</span><span class="om-ex-goal" style="-webkit-line-clamp: 3">{{T.ciInviteB}}</span></span>
 </div>
+<button class="om-tap btn-s om-feat-cta" onClick="{{tr.toCheckin}}">{{T.ciInviteBtn}}<svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></button>
 </section>
 </sc-if>
 
@@ -1539,7 +1566,7 @@ body{margin:0;background:#07070B}
 </div>
 </sc-if>
 
-<div class="om-exlist">
+<div class="om-exlist" id="om-exlist">
 <sc-for list="{{ux.exList}}" as="e" hint-placeholder-count="7">
 <article class="card om-ex {{e.recCls}} om-fade-in">
 <button class="om-tap om-ex-main" onClick="{{e.open}}">
@@ -8539,6 +8566,71 @@ Object.keys(AT41_TXT).forEach(function (l) { MECH_TXT[l] = Object.assign(MECH_TX
       pl.sortMsg = pend ? ix.fb : '';
       pl.sortMsgCls = pend ? 'on' + (ix.ok ? (ix.pending ? '' : ' drop') : ' wrong') : '';
     }
+    return v;
+  };
+})();
+
+
+/* ---------- v42 · Esercizi: featured "Per come ti senti" card, "Altri N consigliati" filters the list ---------- */
+var FEAT42_TXT = {
+  it: { featEye: 'Per come ti senti · {m}', moreRec: 'Altri {n} consigliati', moreRec1: 'Un altro consigliato', recChip: 'Consigliati',
+    ciInviteT: 'Come ti senti adesso?', ciInviteB: 'Fai il check-in: ti consiglio l’esercizio più adatto al tuo stato.', ciInviteBtn: 'Fai il check-in' },
+  en: { featEye: 'For how you feel · {m}', moreRec: '{n} more picks', moreRec1: '1 more pick', recChip: 'Recommended',
+    ciInviteT: 'How do you feel right now?', ciInviteB: 'Check in and I’ll suggest the exercise that fits your state best.', ciInviteBtn: 'Check in' },
+  es: { featEye: 'Según cómo te sientes · {m}', moreRec: '{n} recomendados más', moreRec1: '1 recomendado más', recChip: 'Recomendados',
+    ciInviteT: '¿Cómo te sientes ahora?', ciInviteB: 'Haz el check-in y te sugiero el ejercicio que mejor encaja.', ciInviteBtn: 'Hacer el check-in' },
+  fr: { featEye: 'Selon ton état · {m}', moreRec: '{n} autres conseillés', moreRec1: '1 autre conseillé', recChip: 'Conseillés',
+    ciInviteT: 'Comment te sens-tu maintenant ?', ciInviteB: 'Fais le check-in : je te propose l’exercice le plus adapté.', ciInviteBtn: 'Faire le check-in' },
+  de: { featEye: 'Für deine Stimmung · {m}', moreRec: '{n} weitere Tipps', moreRec1: '1 weiterer Tipp', recChip: 'Empfohlen',
+    ciInviteT: 'Wie fühlst du dich gerade?', ciInviteB: 'Mach den Check-in und ich schlage dir die passende Übung vor.', ciInviteBtn: 'Check-in machen' },
+  pt: { featEye: 'Para como você se sente · {m}', moreRec: 'Mais {n} recomendados', moreRec1: 'Mais 1 recomendado', recChip: 'Recomendados',
+    ciInviteT: 'Como você se sente agora?', ciInviteB: 'Faça o check-in e eu sugiro o exercício mais adequado.', ciInviteBtn: 'Fazer check-in' },
+  zh: { featEye: '根据你的状态 · {m}', moreRec: '另外 {n} 个推荐', moreRec1: '另外 1 个推荐', recChip: '推荐',
+    ciInviteT: '你现在感觉如何？', ciInviteB: '先签到，我会推荐最适合你的练习。', ciInviteBtn: '去签到' },
+  ja: { featEye: '今の気分に合わせて · {m}', moreRec: 'ほかのおすすめ {n} 件', moreRec1: 'ほかのおすすめ 1 件', recChip: 'おすすめ',
+    ciInviteT: '今の気分は？', ciInviteB: 'チェックインすると、いちばん合う練習をおすすめします。', ciInviteBtn: 'チェックインする' },
+  ko: { featEye: '지금 기분에 맞게 · {m}', moreRec: '추천 {n}개 더', moreRec1: '추천 1개 더', recChip: '추천',
+    ciInviteT: '지금 기분이 어때요?', ciInviteB: '체크인하면 가장 잘 맞는 연습을 추천해 드려요.', ciInviteBtn: '체크인하기' }
+};
+Object.keys(FEAT42_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, FEAT42_TXT[l]); });
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this, cl = this.cl();
+    if (s.screen !== 'exercises' || !v.tr || !v.ux) return v;
+    var tr = v.tr, ux = v.ux, ciToday = !!(s.checkin && s.checkin.at >= dayStart());
+    var opts = ciToday ? recOptions(s.checkin.id, new Date().getHours(), s.durPref).filter(function (id, i, a) { return EXI[id] && a.indexOf(id) === i; }).slice(0, 3) : [];
+    var top = opts[0], others = opts.slice(1), recMode = s.exFilter === 'rec' && ciToday && others.length > 0;
+
+    tr.featOn = !!top; tr.inviteOn = !top;
+    tr.feat = top ? [Object.assign(this.exView(top, T, cl), { key: 'feat-' + top })] : [];
+    tr.featEye = top ? fill(T.featEye, { m: this.stateLabel(s.checkin.id) }) : '';
+    tr.moreOn = others.length > 0; tr.morePressed = recMode;
+    tr.moreL = others.length === 1 ? T.moreRec1 : fill(T.moreRec, { n: others.length });
+    tr.moreIc = recMode ? 'M18 6 6 18M6 6l12 12' : 'm6 9 6 6 6-6';
+    tr.moreToggle = function () {
+      self.setState({ exFilter: recMode ? 'all' : 'rec' });
+      setTimeout(function () { var f = document.querySelector('.om-filters'); if (f && f.scrollIntoView) f.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }, 30);
+    };
+    tr.toCheckin = function () {
+      self.tab('home');
+      setTimeout(function () { var b = document.querySelector('.om-ci-grid button, main button.om-mood, main .chip'); if (b) try { b.focus({ preventScroll: true }); } catch (e) {} }, 120);
+    };
+
+    if (s.exFilter === 'rec' && !recMode) {                      // stale filter (new day, no check-in): show all
+      ux.exFilters.forEach(function (f) { f.on = f.key === 'all'; });
+    }
+    if (recMode) {
+      ux.exList = others.map(function (id) { var x = self.exView(id, T, cl); x.isRec = false; x.recCls = ''; x.key = 'r-' + id; return x; });
+      ux.exEmpty = false;
+      ux.exFilters = [{ key: 'rec', l: T.recChip, on: true, pick: function () { self.setState({ exFilter: 'all' }); } }].concat(ux.exFilters.map(function (f) { f.on = false; return f; }));
+      tr.tabs.forEach(function (t) { t.on = false; });
+      v.secSub = tr.featEye;
+      tr.count = fill(others.length === 1 ? T.trCount1 : T.trCount, { n: others.length });
+    }
+    /* a tab always shows its own list again */
+    tr.tabs.forEach(function (t) { var pick = t.pick; t.pick = function () { if (self.state.exFilter === 'rec') self.setState({ exFilter: 'all' }); pick(); }; });
     return v;
   };
 })();
