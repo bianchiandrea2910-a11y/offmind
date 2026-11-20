@@ -1207,6 +1207,8 @@ body{margin:0;background:#07070B}
   mask-image:linear-gradient(90deg,transparent 0%,#000 46%,#000 90%,rgba(0,0,0,.7) 100%),
     linear-gradient(180deg,transparent 0%,rgba(0,0,0,.18) 5%,rgba(0,0,0,.5) 11%,rgba(0,0,0,.82) 18%,#000 27%,#000 58%,transparent 100%);
   mask-composite:intersect}
+/* ---- v45: gamer profile · sticky glass header (same spacing as before) ---- */
+.om-gp-head{display:flex;align-items:center;gap:14px;top:-20px;margin:-20px -24px -18px;padding:20px 24px 18px}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1400,9 +1402,10 @@ body{margin:0;background:#07070B}
 <sc-if value="{{sc.games}}" hint-placeholder-val="{{false}}">
 <div class="scr {{navIn}}">
 <div class="om-scroll" style="flex-grow: 1; min-height: 0; padding: 20px 24px 12px; display: flex; flex-direction: column; gap: 22px">
-<div style="display: flex; align-items: center; gap: 14px">
+<div class="om-head om-gp-head">
 <button class="om-tap ib" onClick="{{toSignup}}" aria-label="{{T.back}}"><svg class="om-i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
-<div role="progressbar" aria-label="{{T.gpTitle}}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90" style="flex-grow: 1; height: 6px; border-radius: 6px; background: var(--trk); overflow: hidden"><div style="height: 100%; width: 90%; border-radius: 6px; background: linear-gradient(90deg, var(--acc), var(--acc2))"></div></div>
+<div role="progressbar" aria-label="{{onb.barLbl}}" aria-valuemin="0" aria-valuemax="{{onb.total}}" aria-valuenow="{{onb.step}}" aria-valuetext="{{onb.stepTxt}}" style="flex-grow: 1; height: 6px; border-radius: 6px; background: var(--trk); overflow: hidden"><div style="height: 100%; width: {{onb.pct}}; border-radius: 6px; background: linear-gradient(90deg, var(--acc), var(--acc2))"></div></div>
+<span class="sr">{{onb.srTxt}}</span>
 </div>
 <div style="display: flex; flex-direction: column; gap: 8px">
 <h1 class="h1">{{T.gpTitle}}</h1>
@@ -8664,6 +8667,34 @@ Object.keys(FEAT42_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] |
     }
     /* a tab always shows its own list again */
     tr.tabs.forEach(function (t) { var pick = t.pick; t.pick = function () { if (self.state.exFilter === 'rec') self.setState({ exFilter: 'all' }); pick(); }; });
+    return v;
+  };
+})();
+
+
+/* ---------- v45 · onboarding step on "Il tuo profilo da gamer" ---------- */
+var ONB45_TXT = {
+  it: { onbBar: 'Avanzamento configurazione', onbStep: 'Passo {a} di {b}', onbHere: 'profilo da gamer' },
+  en: { onbBar: 'Setup progress', onbStep: 'Step {a} of {b}', onbHere: 'gamer profile' },
+  es: { onbBar: 'Progreso de la configuración', onbStep: 'Paso {a} de {b}', onbHere: 'perfil gamer' },
+  fr: { onbBar: 'Progression de la configuration', onbStep: 'Étape {a} sur {b}', onbHere: 'profil de joueur' },
+  de: { onbBar: 'Einrichtungsfortschritt', onbStep: 'Schritt {a} von {b}', onbHere: 'Gamer-Profil' },
+  pt: { onbBar: 'Progresso da configuração', onbStep: 'Passo {a} de {b}', onbHere: 'perfil gamer' },
+  zh: { onbBar: '设置进度', onbStep: '第 {a} 步，共 {b} 步', onbHere: '玩家资料' },
+  ja: { onbBar: '設定の進行状況', onbStep: 'ステップ {a}/{b}', onbHere: 'ゲーマープロフィール' },
+  ko: { onbBar: '설정 진행률', onbStep: '{b}단계 중 {a}단계', onbHere: '게이머 프로필' }
+};
+Object.keys(ONB45_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, ONB45_TXT[l]); });
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T;
+    if (s.screen !== 'games') return v;
+    /* Lingua → (Account) → Profilo da gamer → Home: the account step only when the profile follows sign-up */
+    var viaAccount = (s.stack || []).indexOf('auth') >= 0, total = viaAccount ? 4 : 3, step = viaAccount ? 3 : 2;
+    var stepTxt = fill(T.onbStep, { a: step, b: total });
+    v.onb = { step: step, total: total, pct: Math.round(step / total * 100) + '%', barLbl: T.onbBar, stepTxt: stepTxt, srTxt: stepTxt + ': ' + T.onbHere };
     return v;
   };
 })();
