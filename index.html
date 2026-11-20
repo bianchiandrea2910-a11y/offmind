@@ -1199,6 +1199,14 @@ body{margin:0;background:#07070B}
   .om-root .om-ex .om-ex-side,.om-root .om-feat-row .om-ex-side{padding-right:6px}
   .om-root .om-ex .om-ex-meta .om-dur svg,.om-root .om-feat-row .om-ex-meta .om-dur svg{display:none}
 }
+/* ---- v44: Esercizi header · controller blended into the app background on every edge ---- */
+.om-root:not(.light) .om-train-art{
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 46%,#000 90%,rgba(0,0,0,.7) 100%),
+    linear-gradient(180deg,transparent 0%,rgba(0,0,0,.18) 5%,rgba(0,0,0,.5) 11%,rgba(0,0,0,.82) 18%,#000 27%,#000 58%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent 0%,#000 46%,#000 90%,rgba(0,0,0,.7) 100%),
+    linear-gradient(180deg,transparent 0%,rgba(0,0,0,.18) 5%,rgba(0,0,0,.5) 11%,rgba(0,0,0,.82) 18%,#000 27%,#000 58%,transparent 100%);
+  mask-composite:intersect}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
