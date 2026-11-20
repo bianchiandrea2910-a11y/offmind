@@ -1174,6 +1174,31 @@ body{margin:0;background:#07070B}
 .om-feat-ci-row{display:flex;align-items:flex-start;gap:14px}
 .om-feat-ci-row .ico{width:52px;height:52px;border-radius:50%}
 .om-root .om-feat-cta{width:auto;min-height:48px;align-self:stretch}
+/* ---- v43: Esercizi cards · 2-line description, type chip beside the duration, 44 px buttons ---- */
+.om-root .om-ex .om-ex-main,.om-root .om-feat-row .om-ex-main{padding-right:0}
+.om-root .om-ex .om-ex-tx,.om-root .om-feat-row .om-ex-tx{flex:1 1 auto;min-width:0}
+.om-root .om-ex .om-ex-goal,.om-root .om-ex .om-ex-main:has(.ico.om-cov) .om-ex-goal,
+.om-root .om-feat-row .om-ex-goal,.om-root .om-feat-row .om-ex-main:has(.ico.om-cov) .om-ex-goal{-webkit-line-clamp:2;line-clamp:2}
+.om-root .om-ex .om-ex-meta,.om-root .om-feat-row .om-ex-meta{flex-wrap:nowrap;gap:6px;min-width:0}
+.om-root .om-ex .om-ex-meta .om-dur,.om-root .om-feat-row .om-ex-meta .om-dur{flex-shrink:0}
+.om-root .om-ex .om-ex-kind,.om-root .om-feat-row .om-ex-kind{min-width:0;flex:0 1 auto;padding:4px 9px;border-radius:999px;background:var(--s1);border:1px solid var(--line);
+  font-size:11.5px;font-weight:700;line-height:1.25;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.om-root .om-ex .om-ex-side,.om-root .om-feat-row .om-ex-side{padding-left:12px;justify-content:space-between}
+.om-root .om-ex .om-ex-side .om-cbtn,.om-root .om-feat-row .om-ex-side .om-cbtn{width:44px;height:44px}
+.om-root .om-ex .om-ex-main,.om-root .om-feat-row .om-ex-main{gap:12px}
+.om-root .om-ex .om-ex-main .ico.om-cov,.om-root .om-feat-row .om-ex-main .ico.om-cov{width:76px;height:76px;border-radius:16px}
+.om-root .om-ex .om-ex-side,.om-root .om-feat-row .om-ex-side{padding-right:10px}
+.om-root .om-ex .om-ex-meta .om-dur,.om-root .om-feat-row .om-ex-meta .om-dur{gap:4px;padding:3px 8px;font-size:11.5px}
+.om-root .om-ex .om-ex-meta .om-dur svg,.om-root .om-feat-row .om-ex-meta .om-dur svg{width:12px;height:12px}
+.om-root .om-ex .om-ex-kind,.om-root .om-feat-row .om-ex-kind{padding:3px 8px;font-size:11px}
+@media (max-width:420px){
+  .om-root .om-ex .om-ex-main,.om-root .om-feat-row .om-ex-main{padding-left:10px}
+  .om-root .om-ex .om-ex-meta,.om-root .om-feat-row .om-ex-meta{gap:4px}
+  .om-root .om-ex .om-ex-kind,.om-root .om-feat-row .om-ex-kind{padding:3px 6px}
+  .om-root .om-ex .om-ex-main .ico.om-cov,.om-root .om-feat-row .om-ex-main .ico.om-cov{width:64px;height:64px;border-radius:14px}
+  .om-root .om-ex .om-ex-side,.om-root .om-feat-row .om-ex-side{padding-right:6px}
+  .om-root .om-ex .om-ex-meta .om-dur svg,.om-root .om-feat-row .om-ex-meta .om-dur svg{display:none}
+}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1529,7 +1554,7 @@ body{margin:0;background:#07070B}
 <button class="om-tap om-ex-main" onClick="{{fx.open}}">
 <span aria-hidden="true" class="ico {{fx.coverCls}}" style="background: {{fx.tile}}"><svg class="om-i" width="24" height="24" viewBox="0 0 24 24"><path d="{{fx.ic}}"></path></svg></span>
 <span class="om-ex-tx"><span id="om-feat-t" class="om-ex-name">{{fx.name}}</span><span class="om-ex-goal">{{fx.goal}}</span>
-<span class="om-ex-meta"><span class="om-dur"><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{fx.dur}}</span><span class="om-ex-kind">{{fx.kindLbl}}</span></span></span>
+<span class="om-ex-meta"><span class="om-dur"><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{fx.dur}}</span><span class="om-ex-kind" title="{{fx.kindLbl}}">{{fx.kindLbl}}</span></span></span>
 </button>
 <div class="om-ex-side">
 <button class="om-tap om-cbtn om-fav" onClick="{{fx.fav}}" aria-pressed="{{fx.isFav}}" aria-label="{{fx.favLabel}}" style="color: {{fx.favC}}"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="fill: {{fx.favFill}}; stroke: currentColor; stroke-width: 2; stroke-linejoin: round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"></path></svg></button>
@@ -1575,7 +1600,7 @@ body{margin:0;background:#07070B}
 <sc-if value="{{e.isRec}}" hint-placeholder-val="{{false}}"><span class="om-badge">{{T.recBadge}}</span></sc-if>
 <span class="om-ex-name">{{e.name}}</span>
 <span class="om-ex-goal">{{e.goal}}</span>
-<span class="om-ex-meta"><span class="om-dur"><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{e.dur}}</span><span class="om-ex-kind">{{e.kindLbl}}</span></span>
+<span class="om-ex-meta"><span class="om-dur"><svg class="om-i" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>{{e.dur}}</span><span class="om-ex-kind" title="{{e.kindLbl}}">{{e.kindLbl}}</span></span>
 </span>
 </button>
 <div class="om-ex-side">
