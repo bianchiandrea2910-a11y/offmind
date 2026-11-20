@@ -2935,9 +2935,10 @@ var STI = {}; STATES.forEach(function (s) { STI[s.id] = s; });
 
 var GAMES = [
   { id: 'val', n: 'Valorant', m: 'VAL', c: '#FF6B76' }, { id: 'fn', n: 'Fortnite', m: 'FN', c: '#6FA0FF' },
-  { id: 'lol', n: 'League of Legends', m: 'LoL', c: '#E0BE6A' }, { id: 'cs2', n: 'CS2', m: 'CS2', c: '#F0A04B' },
+  { id: 'lol', n: 'League of Legends', m: 'LoL', c: '#E0BE6A' }, { id: 'cs2', n: 'Counter-Strike 2', m: 'CS2', c: '#F0A04B' },
   { id: 'apex', n: 'Apex Legends', m: 'APX', c: '#FF7A70' }, { id: 'ow2', n: 'Overwatch 2', m: 'OW2', c: '#FFB547' },
-  { id: 'rl', n: 'Rocket League', m: 'RL', c: '#5AA8FF' }, { id: 'fc', n: 'EA FC', m: 'FC', c: '#34D399' }
+  { id: 'rl', n: 'Rocket League', m: 'RL', c: '#5AA8FF' }, { id: 'fc', n: 'EA Sports FC', m: 'FC', c: '#34D399' },
+  { id: 'cod', n: 'Call of Duty', m: 'CoD', c: '#A3E635' }
 ];
 
 var MAIN_LANGS = [
@@ -8223,7 +8224,7 @@ Object.keys(HELP34).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}
 /* ---------- v35 · gaming profile: lists of games and player types ---------- */
 /* Image slot for each game. Leave null until a licensed asset is available (data: URI or a file published with
    the page): the card then shows the image instead of the text mark. Never hot-link third-party URLs. */
-var GAME_ART = {"val": null, "fn": null, "lol": null, "cs2": null, "apex": null, "ow2": null, "rl": null, "fc": null};
+var GAME_ART = {"val": null, "fn": null, "lol": null, "cs2": null, "apex": null, "ow2": null, "rl": null, "fc": null, "cod": null};
 var GP35_TXT = {
   it: { gpGamesT: 'I tuoi giochi · anche più di uno', gpTypesT: 'Tipo di player · anche più di uno', gpRankA: 'Rank in {g}', gpRoleA: 'Ruolo in {g}' },
   en: { gpGamesT: 'Your games · pick as many as you like', gpTypesT: 'Player type · pick as many as you like', gpRankA: 'Rank in {g}', gpRoleA: 'Role in {g}' }
