@@ -1325,20 +1325,25 @@ body{margin:0;background:#07070B}
 <p class="sub">{{T.gpSub}}</p>
 </div>
 <div style="display: flex; flex-direction: column; gap: 10px">
-<h2 class="lbl" style="margin: 0">{{T.mainGame}}</h2>
-<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<h2 id="om-gp-games" class="lbl" style="margin: 0">{{gp.gamesT}}</h2>
+<div role="group" aria-labelledby="om-gp-games" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
 <sc-for list="{{gameList}}" as="g" hint-placeholder-count="8">
-<button class="om-tap chip" onClick="{{g.pick}}" aria-pressed="{{g.on}}" style="height: 56px; border-radius: 18px"><span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 11px; background: {{g.markBg}}; color: {{g.c}}; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center">{{g.m}}</span><span style="white-space: normal; line-height: 1.2; text-align: left">{{g.n}}</span></button>
+<button class="om-tap chip" onClick="{{g.pick}}" aria-pressed="{{g.on}}" style="height: 56px; border-radius: 18px"><span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; overflow: hidden; border-radius: 11px; background: {{g.markBg}}; color: {{g.c}}; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center"><sc-if value="{{g.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{g.art}}" alt="" width="24" height="24" style="width: 24px; height: 24px; object-fit: contain; display: block"></sc-if><sc-if value="{{g.noArt}}" hint-placeholder-val="{{true}}">{{g.m}}</sc-if></span><span style="white-space: normal; line-height: 1.2; text-align: left">{{g.n}}</span></button>
 </sc-for>
 </div>
 </div>
+<sc-for list="{{gp.rr}}" as="r" hint-placeholder-count="1">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 class="lbl" style="margin: 0">{{r.n}}</h3>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<label class="fld">{{T.rank}}<input class="inp" value="{{pf.rank}}" onChange="{{on.rank}}" placeholder="{{T.rankPh}}"></label>
-<label class="fld">{{T.role}}<input class="inp" value="{{pf.role}}" onChange="{{on.role}}" placeholder="{{T.rolePh}}"></label>
+<label class="fld">{{T.rank}}<input class="inp" value="{{r.rank}}" onChange="{{r.onRank}}" placeholder="{{T.rankPh}}" aria-label="{{r.rankA}}"></label>
+<label class="fld">{{T.role}}<input class="inp" value="{{r.role}}" onChange="{{r.onRole}}" placeholder="{{T.rolePh}}" aria-label="{{r.roleA}}"></label>
 </div>
+</div>
+</sc-for>
 <div style="display: flex; flex-direction: column; gap: 10px">
-<h2 class="lbl" style="margin: 0">{{T.playerType}}</h2>
-<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<h2 id="om-gp-types" class="lbl" style="margin: 0">{{gp.typesT}}</h2>
+<div role="group" aria-labelledby="om-gp-types" style="display: flex; flex-wrap: wrap; gap: 8px">
 <sc-for list="{{typeList}}" as="t" hint-placeholder-count="4">
 <button class="om-tap chip" onClick="{{t.pick}}" aria-pressed="{{t.on}}">{{t.l}}</button>
 </sc-for>
@@ -2301,12 +2306,21 @@ body{margin:0;background:#07070B}
 <div class="fld"><label for="om-pf-birth">{{T.birth}}</label><input id="om-pf-birth" class="inp" type="date" value="{{pf.birth}}" onChange="{{on.birth}}" max="{{ed.today}}" aria-invalid="{{ed.hBirth}}" aria-describedby="om-pf-birth-e" style="font-size: 14px"><sc-if value="{{ed.hBirth}}" hint-placeholder-val="{{false}}"><span id="om-pf-birth-e" class="om-ferr om-fade-in">{{ed.eBirth}}</span></sc-if></div>
 <div class="fld"><label for="om-pf-country">{{T.country}}</label><select id="om-pf-country" class="inp" value="{{pf.country}}" onChange="{{on.country}}"><option data-for="countries" data-as="c" value="{{c.v}}">{{c.l}}</option></select></div>
 </div>
-<div class="fld"><label for="om-pf-game">{{T.mainGame}}</label><select id="om-pf-game" class="inp" value="{{pf.game}}" onChange="{{on.game}}"><option data-for="gameOptions" data-as="g" value="{{g.v}}">{{g.l}}</option></select></div>
+<div style="display: flex; flex-direction: column; gap: 8px"><span id="om-pf-games" style="font-size: 13px; font-weight: 700; color: var(--tx2)">{{gp.gamesT}}</span><div role="group" aria-labelledby="om-pf-games" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<sc-for list="{{gameList}}" as="g" hint-placeholder-count="8">
+<button class="om-tap chip" onClick="{{g.pick}}" aria-pressed="{{g.on}}" style="height: 56px; border-radius: 18px"><span aria-hidden="true" style="width: 32px; height: 32px; flex-shrink: 0; overflow: hidden; border-radius: 11px; background: {{g.markBg}}; color: {{g.c}}; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center"><sc-if value="{{g.hasArt}}" hint-placeholder-val="{{false}}"><img src="{{g.art}}" alt="" width="24" height="24" style="width: 24px; height: 24px; object-fit: contain; display: block"></sc-if><sc-if value="{{g.noArt}}" hint-placeholder-val="{{true}}">{{g.m}}</sc-if></span><span style="white-space: normal; line-height: 1.2; text-align: left">{{g.n}}</span></button>
+</sc-for>
+</div></div>
+<sc-for list="{{gp.rr}}" as="r" hint-placeholder-count="1">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h3 class="lbl" style="margin: 0">{{r.n}}</h3>
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
-<div class="fld"><label for="om-pf-rank">{{T.rank}}</label><input id="om-pf-rank" class="inp" value="{{pf.rank}}" onChange="{{on.rank}}" placeholder="{{T.rankPh}}"></div>
-<div class="fld"><label for="om-pf-role">{{T.role}}</label><input id="om-pf-role" class="inp" value="{{pf.role}}" onChange="{{on.role}}" placeholder="{{T.rolePh}}"></div>
+<label class="fld">{{T.rank}}<input class="inp" value="{{r.rank}}" onChange="{{r.onRank}}" placeholder="{{T.rankPh}}" aria-label="{{r.rankA}}"></label>
+<label class="fld">{{T.role}}<input class="inp" value="{{r.role}}" onChange="{{r.onRole}}" placeholder="{{T.rolePh}}" aria-label="{{r.roleA}}"></label>
 </div>
-<div style="display: flex; flex-direction: column; gap: 8px"><span id="om-pf-type" style="font-size: 13px; font-weight: 700; color: var(--tx2)">{{T.playerType}}</span><div role="group" aria-labelledby="om-pf-type" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{typeList}}" as="t" hint-placeholder-count="4"><button class="om-tap chip" onClick="{{t.pick}}" aria-pressed="{{t.on}}">{{t.l}}</button></sc-for></div></div>
+</div>
+</sc-for>
+<div style="display: flex; flex-direction: column; gap: 8px"><span id="om-pf-type" style="font-size: 13px; font-weight: 700; color: var(--tx2)">{{gp.typesT}}</span><div role="group" aria-labelledby="om-pf-type" style="display: flex; flex-wrap: wrap; gap: 8px"><sc-for list="{{typeList}}" as="t" hint-placeholder-count="4"><button class="om-tap chip" onClick="{{t.pick}}" aria-pressed="{{t.on}}">{{t.l}}</button></sc-for></div></div>
 <div class="fld"><label for="om-pf-goals">{{T.goals}}</label><textarea id="om-pf-goals" class="inp" value="{{pf.goals}}" onChange="{{on.goals}}" placeholder="{{T.goalsPh}}" rows="3" style="height: 96px; padding: 14px 16px; resize: none; line-height: 1.45"></textarea></div>
 </div>
 <div style="flex-shrink: 0; padding: 10px 20px 24px; display: flex; flex-direction: column; gap: 8px">
@@ -6943,6 +6957,11 @@ function acMakeBackend() {
         var p = r[0].data;
         if (!p) return { error: { code: 'no_profile' } };
         var pf = {}; Object.keys(PF_MAP).forEach(function (k) { var v = p[PF_MAP[k]]; pf[k] = v == null ? '' : String(v); });
+        /* gaming profile lists (v35): several games and player types, rank / role per game */
+        if (Array.isArray(p.games)) pf.games = p.games.slice();
+        if (Array.isArray(p.player_types)) pf.types = p.player_types.slice();
+        if (p.game_ranks && typeof p.game_ranks === 'object') pf.ranks = Object.assign({}, p.game_ranks);
+        if (p.game_roles && typeof p.game_roles === 'object') pf.roles = Object.assign({}, p.game_roles);
         return { error: null, profile: { pf: pf, avatar: p.avatar || 0, onboarded: !!p.onboarded_at, deactivated: !!p.deactivated_at },
           prefs: (r[1].data && r[1].data.prefs) || {}, favs: (r[2].data || []).map(function (x) { return x.ex_id; }),
           history: (r[3].data || []).map(function (x) { return x.item; }) };
@@ -6950,6 +6969,10 @@ function acMakeBackend() {
     },
     saveProfile: function (id, pf, avatar, extra) {
       var row = {}; Object.keys(PF_MAP).forEach(function (k) { if (pf && pf[k] !== undefined) row[PF_MAP[k]] = k === 'birth' ? (pf[k] || null) : String(pf[k] || ''); });
+      if (pf && Array.isArray(pf.games)) row.games = pf.games.slice(0, 8);
+      if (pf && Array.isArray(pf.types)) row.player_types = pf.types.slice(0, 4);
+      if (pf && pf.ranks && typeof pf.ranks === 'object') row.game_ranks = pf.ranks;
+      if (pf && pf.roles && typeof pf.roles === 'object') row.game_roles = pf.roles;
       if (avatar != null) row.avatar = avatar;
       Object.assign(row, extra || {});
       return wrap(sb.from('profiles').update(row).eq('id', id)).then(function (r) { if (r.error && /23505|duplicate/.test((r.error.code || '') + r.error.message)) r.error.code = 'username_taken'; return r; });
@@ -7033,7 +7056,7 @@ function acStartScreen(hsh) {
         (g.history || []).forEach(function (x) { if (x && x.id && !have[x.id] && AC_KINDS[x.type]) { history.push(x); uploads.hist.push(x); } });
         history.sort(function (a, b) { return b.at - a.at; });
         Object.keys(g.favs || {}).forEach(function (k) { if (g.favs[k] && !favs[k]) { favs[k] = true; uploads.favs.push(k); } });
-        if (!d.profile.onboarded && g.pf) { ['game', 'rank', 'role', 'type', 'goals', 'first', 'last', 'birth', 'country'].forEach(function (k) { if (g.pf[k]) pf[k] = g.pf[k]; }); uploads.profile = { pf: pf, avatar: g.avatar || 0, onboarded: !!s.guestOnboarded }; avatar = g.avatar || 0; }
+        if (!d.profile.onboarded && g.pf) { ['game', 'rank', 'role', 'type', 'goals', 'first', 'last', 'birth', 'country', 'games', 'types', 'ranks', 'roles'].forEach(function (k) { if (g.pf[k]) pf[k] = g.pf[k]; }); uploads.profile = { pf: pf, avatar: g.avatar || 0, onboarded: !!s.guestOnboarded }; avatar = g.avatar || 0; }
         clearTimeout(self._gT); Guest.clear();   /* a pending guest save must not write the store back */
       }
       var st = { loggedIn: true, guest: false, pf: pf, avatar: avatar, favs: favs, history: history, checkin: todayCheckin(history), acLoadErr: false,
@@ -8192,6 +8215,88 @@ Object.keys(HELP34).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}
     v.hs = { open: !!s.hsOpen, t: T.hsT, lead: T.hsLead, note: T.hsNote, closeL: T.hsClose, lines: lines.map(function (l, i) { return Object.assign({ key: 'hs' + i }, l); }),
       scrimCls: s.hsOut ? 'om-fade-out' : 'om-fade-in', sheetCls: s.hsOut ? 'om-sheet-out' : 'om-sheet-in',
       close: function () { self.hsClose(); }, scrim: function (e) { if (e.target === e.currentTarget) self.hsClose(); } };
+    return v;
+  };
+})();
+
+
+/* ---------- v35 · gaming profile: lists of games and player types ---------- */
+/* Image slot for each game. Leave null until a licensed asset is available (data: URI or a file published with
+   the page): the card then shows the image instead of the text mark. Never hot-link third-party URLs. */
+var GAME_ART = { val: null, fn: null, lol: null, cs2: null, apex: null, ow2: null, rl: null, fc: null };
+var GP35_TXT = {
+  it: { gpGamesT: 'I tuoi giochi · anche più di uno', gpTypesT: 'Tipo di player · anche più di uno', gpRankA: 'Rank in {g}', gpRoleA: 'Ruolo in {g}' },
+  en: { gpGamesT: 'Your games · pick as many as you like', gpTypesT: 'Player type · pick as many as you like', gpRankA: 'Rank in {g}', gpRoleA: 'Role in {g}' }
+};
+Object.keys(GP35_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, GP35_TXT[l]); });
+var TYPE_IDS = ['casual', 'comp', 'pro', 'streamer'];
+
+/* lists + single fields kept in sync (the singles describe the first game / type) */
+function pfLists(pf) {
+  pf = Object.assign({}, pf || {});
+  var known = GAMES.map(function (g) { return g.id; });
+  var games = Array.isArray(pf.games) ? pf.games.filter(function (x) { return known.indexOf(x) >= 0; }) : (pf.game && known.indexOf(pf.game) >= 0 ? [pf.game] : []);
+  var types = Array.isArray(pf.types) ? pf.types.filter(function (x) { return TYPE_IDS.indexOf(x) >= 0; }) : (pf.type && TYPE_IDS.indexOf(pf.type) >= 0 ? [pf.type] : []);
+  var ranks = Object.assign({}, pf.ranks || {}), roles = Object.assign({}, pf.roles || {});
+  if (!pf.ranks && pf.game && pf.rank) ranks[pf.game] = pf.rank;      /* old profile: rank / role belonged to the main game */
+  if (!pf.roles && pf.game && pf.role) roles[pf.game] = pf.role;
+  pf.games = games; pf.types = types; pf.ranks = ranks; pf.roles = roles;
+  pf.game = games[0] || ''; pf.type = types[0] || '';
+  pf.rank = pf.game ? (ranks[pf.game] || '') : ''; pf.role = pf.game ? (roles[pf.game] || '') : '';
+  return pf;
+}
+function pfNeedsLists(pf) { return !!pf && !(Array.isArray(pf.games) && Array.isArray(pf.types) && pf.ranks && pf.roles); }
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origDU = P.componentDidUpdate, origMount = P.componentDidMount;
+  var toggle = function (list, id) { return list.indexOf(id) >= 0 ? list.filter(function (x) { return x !== id; }) : list.concat([id]); };
+
+  /* every profile (new, guest, account, demo) is converted once to the list model */
+  P.gp35Norm = function () {
+    var s = this.state, patch = null;
+    if (pfNeedsLists(s.pf)) patch = { pf: pfLists(s.pf) };
+    if (s.pfDraft && pfNeedsLists(s.pfDraft)) { patch = patch || {}; patch.pfDraft = pfLists(s.pfDraft); }
+    if (patch) this.setState(patch);
+  };
+  P.componentDidMount = function () { var r = origMount ? origMount.apply(this, arguments) : undefined; this.gp35Norm(); return r; };
+  P.componentDidUpdate = function () { var r = origDU ? origDU.apply(this, arguments) : undefined; this.gp35Norm(); return r; };
+
+  /* NOVA gets every game with its rank / role and every player type */
+  var ctx0 = NovaLive.profileContext;
+  NovaLive.profileContext = function (s) {
+    var base = ctx0.apply(this, arguments), pf = pfLists(s.pf);
+    if (pf.games.length < 2 && pf.types.length < 2) return base;
+    var gl = pf.games.map(function (id) { var g = GAMES.filter(function (x) { return x.id === id; })[0]; return (g ? g.n : id) + (pf.ranks[id] ? ' (rank ' + pf.ranks[id] + ')' : '') + (pf.roles[id] ? ' (role ' + pf.roles[id] + ')' : ''); });
+    return base + ' Games played: ' + gl.join(', ') + '. Player types: ' + pf.types.join(', ') + '.';
+  };
+
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this, scr = s.screen;
+    if (scr !== 'games' && scr !== 'edit') { v.gp = v.gp || { rr: [], gamesT: T.gpGamesT, typesT: T.gpTypesT }; return v; }
+    var draft = scr === 'edit', pf = pfLists(draft ? (s.pfDraft || s.pf) : s.pf);
+    var set = function (patch) {
+      var cur = pfLists(draft ? (self.state.pfDraft || self.state.pf) : self.state.pf), next = pfLists(Object.assign(cur, patch));
+      self.setState(draft ? { pfDraft: next } : { pf: next });
+    };
+    v.gameList = GAMES.map(function (g) {
+      var art = GAME_ART[g.id];
+      return { key: g.id, n: g.n, m: g.m, c: g.c, markBg: g.c + '22', on: pf.games.indexOf(g.id) >= 0, art: art || '', hasArt: !!art, noArt: !art,
+        pick: function () { var cur = pfLists(draft ? (self.state.pfDraft || self.state.pf) : self.state.pf); set({ games: toggle(cur.games, g.id) }); } };
+    });
+    var TL = { casual: T.tCasual, comp: T.tComp, pro: T.tPro, streamer: T.tStreamer };
+    v.typeList = TYPE_IDS.map(function (id) {
+      return { key: id, l: TL[id], on: pf.types.indexOf(id) >= 0,
+        pick: function () { var cur = pfLists(draft ? (self.state.pfDraft || self.state.pf) : self.state.pf); set({ types: toggle(cur.types, id) }); } };
+    });
+    v.gp = { gamesT: T.gpGamesT || T.mainGame, typesT: T.gpTypesT || T.playerType,
+      rr: pf.games.map(function (id) {
+        var g = GAMES.filter(function (x) { return x.id === id; })[0] || { n: id };
+        return { key: 'rr-' + id, n: g.n, rank: pf.ranks[id] || '', role: pf.roles[id] || '',
+          rankA: fill(T.gpRankA || 'Rank {g}', { g: g.n }), roleA: fill(T.gpRoleA || 'Role {g}', { g: g.n }),
+          onRank: function (e) { var cur = pfLists(draft ? (self.state.pfDraft || self.state.pf) : self.state.pf), m = Object.assign({}, cur.ranks); m[id] = e.target.value.slice(0, 40); set({ ranks: m }); },
+          onRole: function (e) { var cur = pfLists(draft ? (self.state.pfDraft || self.state.pf) : self.state.pf), m = Object.assign({}, cur.roles); m[id] = e.target.value.slice(0, 40); set({ roles: m }); } };
+      }) };
+    v.pf = Object.assign({}, v.pf || {}, pf);
     return v;
   };
 })();
