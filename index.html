@@ -1123,6 +1123,15 @@ body{margin:0;background:#07070B}
 .om-brand-w span{font-weight:500;color:var(--accT)}
 /* ---- v34: a profile row whose subtitle may wrap ---- */
 .om-root .om-wrap{white-space:normal!important;overflow:visible!important;line-height:1.35}
+/* ---- v38: web Shop · price as a label, note reached from the wallet ---- */
+.om-pack-price{flex-shrink:0;min-width:92px;min-height:46px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;
+  border:1px solid var(--line);background:var(--s2);color:var(--tx);font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;cursor:default}
+.om-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.om-paynote{scroll-margin-top:16px;transition:border-color .3s ease,box-shadow .3s ease}
+.om-paynote:focus{outline:none}
+.om-paynote.hl{border-color:#FBBF24;box-shadow:0 0 0 3px color-mix(in srgb,#FBBF24 28%,transparent)}
+@media (max-width:360px){.om-pack-price{min-width:84px;padding:0 12px}}
+@media (prefers-reduced-motion:reduce){.om-paynote{transition:none}}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -2186,10 +2195,10 @@ body{margin:0;background:#07070B}
 <div class="om-wallet-top"><span id="om-wallet-t" class="om-wallet-l"><svg class="om-i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7a2 2 0 0 1 2-2h11v4M4 7v11a2 2 0 0 0 2 2h14V9H6a2 2 0 0 1-2-2zM16 14h.01"></path></svg>{{T.walletT}}</span></div>
 <div class="om-wallet-bal"><span class="om-wallet-n">{{wallet.credits}}</span><span class="om-wallet-u">{{wallet.creditsL}}</span></div>
 <span class="om-wallet-sub">{{wallet.sub}}</span>
-<button class="om-tap om-wallet-cta" onClick="{{wallet.toPacks}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><path d="M12 5v14M5 12h14"></path></svg>{{T.topUp}}</button>
+<sc-if value="{{wallet.payOn}}" hint-placeholder-val="{{false}}"><button class="om-tap om-wallet-cta" onClick="{{wallet.toPacks}}"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><path d="M12 5v14M5 12h14"></path></svg>{{T.topUp}}</button></sc-if><sc-if value="{{wallet.payOff}}" hint-placeholder-val="{{true}}"><button class="om-tap om-wallet-cta" onClick="{{wallet.toPayNote}}" aria-controls="om-paynote"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.4"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>{{T.dlApp}}</button></sc-if>
 </section>
 
-<sc-if value="{{wallet.payOff}}" hint-placeholder-val="{{true}}"><div class="om-paynote" role="note"><span aria-hidden="true" class="om-paynote-ic"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.2"><path d="M12 3a9 9 0 1 0 .01 0M12 11v5M12 8h.01"></path></svg></span><span><b>{{T.payNaT}}</b><span>{{T.payNaB}}</span></span></div></sc-if>
+<sc-if value="{{wallet.payOff}}" hint-placeholder-val="{{true}}"><div class="om-paynote {{wallet.noteCls}}" id="om-paynote" role="note" tabindex="-1"><span aria-hidden="true" class="om-paynote-ic"><svg class="om-i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.2"><path d="M12 3a9 9 0 1 0 .01 0M12 11v5M12 8h.01"></path></svg></span><span><b>{{T.payNaT}}</b><span>{{T.payNaB}}</span></span></div></sc-if>
 
 <section class="om-shop-sec" id="om-packs" aria-labelledby="om-packs-t">
 <h2 id="om-packs-t" class="om-h3">{{T.packsT}}</h2>
@@ -2199,7 +2208,7 @@ body{margin:0;background:#07070B}
 <sc-if value="{{p.hasTag}}" hint-placeholder-val="{{false}}"><span class="om-pack-tag">{{p.tag}}</span></sc-if>
 <span aria-hidden="true" class="om-pack-ic {{p.icCls}}"><svg class="om-i" width="24" height="24" viewBox="0 0 24 24"><path d="{{p.ic}}"></path></svg></span>
 <span class="om-pack-tx"><span class="om-pack-n">{{p.name}}</span><span class="om-pack-c"><b>{{p.credits}}</b> {{T.credits}}</span><span class="om-pack-cv">{{p.convs}}</span><sc-if value="{{p.hasSave}}" hint-placeholder-val="{{false}}"><span class="om-pack-save">{{p.save}}</span></sc-if></span>
-<button class="om-tap om-pack-buy" onClick="{{p.buy}}" aria-label="{{p.aria}}">{{p.price}}</button>
+<sc-if value="{{p.payOn}}" hint-placeholder-val="{{false}}"><button class="om-tap om-pack-buy" onClick="{{p.buy}}" aria-label="{{p.aria}}">{{p.price}}</button></sc-if><sc-if value="{{p.payOff}}" hint-placeholder-val="{{true}}"><span class="om-pack-price" aria-disabled="true">{{p.price}}<span class="om-vh"> · {{T.priceInApp}}</span></span></sc-if>
 </div>
 </sc-for>
 </div>
@@ -8317,6 +8326,42 @@ function gameArt(idOrName) {
     if (v.gp && v.gp.rr) v.gp.rr.forEach(function (r) { Object.assign(r, gameArt(r.key.replace(/^rr-/, ''))); });
     if (v.ux) v.ux.gm = gameArt((s.pf && s.pf.game) || '');
     if (v.ses) v.ses.gm = gameArt(s.session ? s.session.game : '');
+    return v;
+  };
+})();
+
+
+/* ---------- v38 · Shop on the web: prices are information, the wallet leads to the app note ---------- */
+var WEB38_TXT = {
+  it: { dlApp: 'Scarica l’app', priceInApp: 'acquistabile nell’app per iPhone e Android' },
+  en: { dlApp: 'Get the app', priceInApp: 'available in the iPhone and Android app' },
+  es: { dlApp: 'Descarga la app', priceInApp: 'disponible en la app para iPhone y Android' },
+  fr: { dlApp: 'Télécharger l’app', priceInApp: 'disponible dans l’app iPhone et Android' },
+  de: { dlApp: 'App herunterladen', priceInApp: 'in der iPhone- und Android-App erhältlich' },
+  pt: { dlApp: 'Baixar o app', priceInApp: 'disponível no app para iPhone e Android' },
+  zh: { dlApp: '下载应用', priceInApp: '可在 iPhone 和 Android 应用中购买' },
+  ja: { dlApp: 'アプリをダウンロード', priceInApp: 'iPhone・Android アプリで購入できます' },
+  ko: { dlApp: '앱 다운로드', priceInApp: 'iPhone 및 Android 앱에서 구매 가능' }
+};
+Object.keys(WEB38_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, WEB38_TXT[l]); });
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, self = this, web = !NativeStore.available();
+    if (v.wallet) {
+      v.wallet.payOff = web; v.wallet.payOn = !web;
+      v.wallet.noteCls = s.payNoteHl ? 'hl' : '';
+      v.wallet.toPayNote = function () {
+        var el = document.getElementById('om-paynote'); if (!el) return;
+        var rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollIntoView({ behavior: rm ? 'auto' : 'smooth', block: 'nearest' });
+        try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+        clearTimeout(self._payHlT); self.setState({ payNoteHl: true });
+        self._payHlT = setTimeout(function () { self.setState({ payNoteHl: false }); }, 1600);
+      };
+    }
+    if (v.shop && v.shop.packs) v.shop.packs.forEach(function (p) { p.payOff = web; p.payOn = !web; });
     return v;
   };
 })();
