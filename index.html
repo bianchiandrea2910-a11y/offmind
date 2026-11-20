@@ -1211,9 +1211,8 @@ body{margin:0;background:#07070B}
 <p class="sub" style="font-size: 16px">{{T.welcomeP}}</p>
 </div>
 <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
-<button class="om-tap btn-p" onClick="{{toSignup}}">{{T.getStarted}}</button>
+<button class="om-tap btn-p" onClick="{{startGuest}}">{{T.getStarted}}</button>
 <button class="om-tap btn-t" onClick="{{toLogin}}" style="height: 48px">{{T.haveAcc}}</button>
-<button class="om-tap btn-t" onClick="{{startGuest}}" style="height: 44px; font-size: 14px; color: var(--tx3)">{{T.acGuest}}</button>
 </div>
 </div>
 </sc-if>
@@ -2670,7 +2669,7 @@ body{margin:0;background:#07070B}
 <p id="om-modal-b" class="sub">{{modal.b}}</p>
 <sc-if value="{{modal.needsType}}" hint-placeholder-val="{{false}}"><label class="fld">{{modal.typeLabel}}<input class="inp" value="{{modalInput}}" onChange="{{onModalInput}}" autocomplete="off"></label></sc-if>
 <button class="om-tap btn-d" onClick="{{modalConfirm}}" disabled="{{modal.blocked}}" style="background: {{modal.cBg}}; --mc: {{modal.cC}}">{{modal.c}}</button>
-<sc-if value="{{modalCancel}}" hint-placeholder-val="{{true}}"><button class="om-tap btn-s" onClick="{{closeModal}}" autofocus="{{true}}">{{T.cancel}}</button></sc-if>
+<sc-if value="{{modalCancel}}" hint-placeholder-val="{{true}}"><button class="om-tap btn-s" onClick="{{closeModal}}" autofocus="{{true}}">{{modalCancelL}}</button></sc-if>
 </div>
 </div>
 </sc-if>
@@ -8017,6 +8016,80 @@ function nqNewId() { return 'c' + Date.now().toString(36) + Math.random().toStri
         v.modal = { t: t, b: b, c: cta, needsType: false, blocked: false, single: true, cBg: 'linear-gradient(120deg, var(--accM), var(--acc) 55%, var(--acc2))', cC: '#FFFFFF' };
         v.modalConfirm = go; v.modalCancel = false;
       }
+    }
+    return v;
+  };
+})();
+
+
+/* ---------- v33 · guest first, sign-up after the first exercise ---------- */
+var SAVE33_TXT = {
+  it: { svT: 'Salva i tuoi progressi', svB: 'Crea un account gratuito: l’esercizio che hai appena fatto, i check-in e il tuo profilo da gamer passano all’account e li ritrovi su ogni dispositivo.', svC: 'Crea account', svL: 'Più tardi' },
+  en: { svT: 'Save your progress', svB: 'Create a free account: the exercise you just did, your check-ins and your gamer profile move to the account, so you’ll find them on every device.', svC: 'Create account', svL: 'Later' }
+};
+Object.keys(SAVE33_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, SAVE33_TXT[l]); });
+
+/* the guest store keeps "already asked" across its periodic rewrites */
+(function () {
+  var gw = Guest.write;
+  Guest.write = function (o) {
+    var old = Guest.read();
+    if (o && o.savePrompted === undefined && old && old.savePrompted) o = Object.assign({}, o, { savePrompted: true });
+    return gw.call(Guest, o);
+  };
+})();
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origDU = P.componentDidUpdate, origMount = P.componentDidMount;
+  var OUT_MS = 160;
+  var QUIET = { player: 1, complete: 1, auth: 1, forgot: 1, checkmail: 1, newpw: 1, games: 1, welcome: 1, lang: 1, langAll: 1, support: 1, account: 1 };   /* account: it already offers sign-up */
+
+  P.sv33Due = function () {
+    var s = this.state;
+    if (!s.guest || (Account && Account.user) || s.svOpen || QUIET[s.screen]) return false;
+    if (s.modal || s.shopModal || s.sesModal || s.novaModal) return false;
+    var g = Guest.read(); if (g && g.savePrompted) return false;
+    return (s.history || []).some(function (h) { return h.type === 'ex' && !h.partial; });
+  };
+  P.sv33Mark = function () { var g = Guest.read() || {}; Guest.write(Object.assign({}, g, { savePrompted: true })); };
+  P.sv33Close = function (then) {
+    var self = this; if (!this.state.svOpen || this.state.modalOut) return;
+    this.sv33Mark();
+    this.setState({ modalOut: true }); clearTimeout(this._svT);
+    this._svT = setTimeout(function () { self.setState({ svOpen: false, modalOut: false }, then); }, OUT_MS);
+  };
+  P.sv33Create = function () {
+    var self = this, from = this.state.screen;
+    this.sv33Mark();
+    this.setState({ svOpen: false, modalOut: false, screen: 'auth', authMode: 'signup', stack: [from], authErr: '' });
+  };
+
+  P.componentDidMount = function () {
+    var r = origMount ? origMount.apply(this, arguments) : undefined, self = this;
+    this._svKey = function (e) { if (e.key === 'Escape' && self.state.svOpen) self.sv33Close(); };
+    document.addEventListener('keydown', this._svKey);
+    return r;
+  };
+  P.componentDidUpdate = function (pp, ps) {
+    var r = origDU ? origDU.apply(this, arguments) : undefined;
+    if (this.sv33Due()) this.setState({ svOpen: true, modalOut: false });
+    return r;
+  };
+
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state, T = v.T, self = this;
+    v.modalCancelL = v.modalCancelL || T.cancel;
+    /* the gaming profile's back button returns guests to the welcome screen (not to sign-up) */
+    if (s.screen === 'games' && s.guest && !(Account && Account.user)) v.toSignup = function () { self.setState({ screen: 'welcome', stack: [], guest: false }); };
+    if (s.svOpen) {
+      v.hasModal = true;
+      v.modal = { t: T.svT, b: T.svB, c: T.svC, needsType: false, blocked: false, cBg: 'linear-gradient(120deg, var(--accM), var(--acc) 55%, var(--acc2))', cC: '#FFFFFF' };
+      v.modalCancel = true; v.modalCancelL = T.svL;
+      v.modalScrimCls = s.modalOut ? 'om-fade-out' : 'om-fade-in';
+      v.modalSheetCls = s.modalOut ? 'om-sheet-out' : 'om-sheet-in';
+      v.modalConfirm = function () { self.sv33Create(); };
+      v.closeModal = function () { self.sv33Close(); };
+      v.modalScrimClick = function (e) { if (e.target === e.currentTarget) self.sv33Close(); };
     }
     return v;
   };
