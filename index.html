@@ -1209,6 +1209,13 @@ body{margin:0;background:#07070B}
   mask-composite:intersect}
 /* ---- v45: gamer profile · sticky glass header (same spacing as before) ---- */
 .om-gp-head{display:flex;align-items:center;gap:14px;top:-20px;margin:-20px -24px -18px;padding:20px 24px 18px}
+/* ---- v46: splash · >= 24 px above the buttons; the art gives way on short screens ---- */
+.om-wel-art{flex:0 1 430px;min-height:150px}
+.om-wel-stage{position:absolute;left:0;right:0;top:0;height:430px;transform-origin:50% 0}
+.om-wel-cta{padding-top:24px;flex-shrink:0}
+@media (max-height:700px){.om-wel-stage{transform:scale(.76)}}
+@media (max-height:640px){.om-wel-stage{transform:scale(.64)}}
+@media (max-height:580px){.om-wel-stage{transform:scale(.52)}}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -1281,7 +1288,7 @@ body{margin:0;background:#07070B}
 <!-- ================= WELCOME ================= -->
 <sc-if value="{{sc.welcome}}" hint-placeholder-val="{{false}}">
 <div class="scr om-enter" style="padding: 0 24px 30px">
-<div aria-hidden="true" style="position: relative; height: 430px; margin: 0 -24px; overflow: hidden; flex-shrink: 0">
+<div aria-hidden="true" class="om-wel-art" style="position: relative; margin: 0 -24px; overflow: hidden"><div class="om-wel-stage">
 <div style="position: absolute; left: -80px; top: -60px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(47,91,255,.42) 0%, rgba(47,91,255,0) 70%)"></div>
 <div style="position: absolute; right: -90px; top: 90px; width: 380px; height: 380px; border-radius: 50%; background: radial-gradient(circle, rgba(170,70,255,.38) 0%, rgba(170,70,255,0) 70%)"></div>
 <div style="position: absolute; left: 50%; top: 215px; width: 480px; height: 480px; margin: -240px 0 0 -240px; border-radius: 50%; border: 1px solid var(--line)"></div>
@@ -1291,6 +1298,7 @@ body{margin:0;background:#07070B}
 <div style="position: absolute; left: 30px; top: 110px; padding: 10px 14px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #FF4D5E"></span>Anti-Tilt</div>
 <div style="position: absolute; right: 28px; top: 186px; padding: 10px 14px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #7C5CFF"></span>Focus</div>
 <div style="position: absolute; left: 64px; top: 318px; padding: 10px 14px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.12); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px"><span style="width: 8px; height: 8px; border-radius: 50%; background: #34D399"></span>NOVA AI</div>
+</div>
 <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 120px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, var(--bg) 100%)"></div>
 </div>
 <div style="display: flex; flex-direction: column; gap: 14px">
@@ -1298,7 +1306,7 @@ body{margin:0;background:#07070B}
 <h1 class="h1" style="font-size: 28px">{{T.welcomeH}}</h1>
 <p class="sub" style="font-size: 16px">{{T.welcomeP}}</p>
 </div>
-<div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
+<div class="om-wel-cta" style="margin-top: auto; display: flex; flex-direction: column; gap: 8px">
 <button class="om-tap btn-p" onClick="{{startGuest}}">{{T.getStarted}}</button>
 <button class="om-tap btn-t" onClick="{{toLogin}}" style="height: 48px">{{T.haveAcc}}</button>
 </div>
