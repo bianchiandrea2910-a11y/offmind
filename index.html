@@ -3819,7 +3819,7 @@ class Component extends DCLogic {
     this.state = {
       screen: start, stack: [], lang: this.props.lang || 'it', langCtx: 'onb', langQuery: '',
       authMode: 'signup', authEmail: '', agree: false, agreeErr: false, loggedIn: inApp,
-      pf: OM_DEMO ? { username: 'andrea.gg', first: 'Andrea', last: '', birth: '', country: 'IT', game: 'val', rank: 'Diamond 2', role: 'Duelist', type: 'comp', goals: '' } : { username: '', first: '', last: '', birth: '', country: 'IT', game: 'val', rank: '', role: '', type: 'comp', goals: '' }, avatar: 0,
+      pf: OM_DEMO ? { username: 'andrea.gg', first: 'Andrea', last: '', birth: '', country: 'IT', game: 'val', rank: 'Diamond 2', role: 'Duelist', type: 'comp', goals: '' } : { username: '', first: '', last: '', birth: '', country: 'IT', game: '', rank: '', role: '', type: '', goals: '' }, avatar: 0,
       checkin: OM_DEMO && start !== 'home' ? { id: 'tilted', at: now - 600000 } : null, score: OM_DEMO ? 78 : 0,
       sec: 'pre', favs: OM_DEMO ? { antitilt: true, focusboost: true, prebreath: true, tournament: true } : {},
       exId: start === 'player' || start === 'complete' ? 'reset' : 'antitilt',
@@ -6344,7 +6344,7 @@ function savedStart() { var sv = Prefs.read(); return sv && sv.loggedIn ? 'home'
       try { NovaLive.end(); } catch (e) {}
       this.signOut('lang');
       this.setState({ p14Wiped: true, history: [], favs: {}, msgs: [], quick: [], novaConsent: null, checkin: null, session: null, sesEnded: null,
-        pf: { username: '', first: '', last: '', birth: '', country: 'IT', game: 'val', rank: '', role: '', type: 'comp', goals: '' }, avatar: 0,
+        pf: { username: '', first: '', last: '', birth: '', country: 'IT', game: '', rank: '', role: '', type: '', goals: '' }, avatar: 0,
         acc: { email: '', pending: null, pwAt: null }, mode: 'dark', accent: 'violet', musicOn: true, volume: 60, defSound: 'auto', vibration: true, durPref: 'standard',
         voiceReplies: true, saveChats: true, analytics: true, notifs: { n1: true, n2: true, n3: true, n4: false, n5: true, n6: false, n7: true, n8: true } }, function () { Prefs.clear(); });
       this.toast(T.p14Deleted);
@@ -7112,6 +7112,8 @@ function acMakeBackend() {
         if (Array.isArray(p.player_types)) pf.types = p.player_types.slice();
         if (p.game_ranks && typeof p.game_ranks === 'object') pf.ranks = Object.assign({}, p.game_ranks);
         if (p.game_roles && typeof p.game_roles === 'object') pf.roles = Object.assign({}, p.game_roles);
+        if (Array.isArray(pf.games)) { pf.game = pf.games[0] || ''; pf.rank = pf.game ? ((pf.ranks || {})[pf.game] || pf.rank || '') : ''; pf.role = pf.game ? ((pf.roles || {})[pf.game] || pf.role || '') : ''; }
+        if (Array.isArray(pf.types)) pf.type = pf.types[0] || '';
         return { error: null, profile: { pf: pf, avatar: p.avatar || 0, onboarded: !!p.onboarded_at, deactivated: !!p.deactivated_at },
           prefs: (r[1].data && r[1].data.prefs) || {}, favs: (r[2].data || []).map(function (x) { return x.ex_id; }),
           history: (r[3].data || []).map(function (x) { return x.item; }) };
@@ -7158,7 +7160,7 @@ function acStartScreen(hsh) {
   var P = Component.prototype, origRV = P.renderVals, origDU = P.componentDidUpdate, origMount = P.componentDidMount, origUnmount = P.componentWillUnmount;
   var origEmail = P.submitEmail, origPw = P.submitPw, origConfirm = P.confirmModal, origSave = P.p14SaveProfile;
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, USER_RE = /^[a-zA-Z0-9._]{3,20}$/;
-  var EMPTY_PF = function () { return { username: '', first: '', last: '', birth: '', country: 'IT', game: 'val', rank: '', role: '', type: 'comp', goals: '' }; };
+  var EMPTY_PF = function () { return { username: '', first: '', last: '', birth: '', country: 'IT', game: '', rank: '', role: '', type: '', goals: '' }; };
   var PREF_FIELDS = ['lang', 'mode', 'accent', 'musicOn', 'volume', 'defSound', 'vibration', 'durPref', 'voiceReplies', 'saveChats', 'analytics', 'notifs', 'novaConsent'];
   function prefsOf(s) { var o = {}; PREF_FIELDS.forEach(function (k) { if (s[k] !== undefined) o[k] = s[k]; }); return o; }
   function favsOf(list) { var o = {}; (list || []).forEach(function (x) { o[x] = true; }); return o; }
@@ -8403,10 +8405,14 @@ function pfNeedsLists(pf) { return !!pf && !(Array.isArray(pf.games) && Array.is
 
   /* every profile (new, guest, account, demo) is converted once to the list model */
   P.gp35Norm = function () {
-    var s = this.state, patch = null;
-    if (pfNeedsLists(s.pf)) patch = { pf: pfLists(s.pf) };
-    if (s.pfDraft && pfNeedsLists(s.pfDraft)) { patch = patch || {}; patch.pfDraft = pfLists(s.pfDraft); }
-    if (patch) this.setState(patch);
+    var s = this.state;
+    if (!pfNeedsLists(s.pf) && !(s.pfDraft && pfNeedsLists(s.pfDraft))) return;
+    this.setState(function (st) {
+      var patch = null;
+      if (pfNeedsLists(st.pf)) patch = { pf: pfLists(st.pf) };
+      if (st.pfDraft && pfNeedsLists(st.pfDraft)) { patch = patch || {}; patch.pfDraft = pfLists(st.pfDraft); }
+      return patch;
+    });
   };
   P.componentDidMount = function () { var r = origMount ? origMount.apply(this, arguments) : undefined; this.gp35Norm(); return r; };
   P.componentDidUpdate = function () { var r = origDU ? origDU.apply(this, arguments) : undefined; this.gp35Norm(); return r; };
@@ -8970,6 +8976,20 @@ Object.keys(SES50_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] ||
     var v = origRV.call(this), s = this.state;
     var guest = s.screen === 'nova' && !!(v.nq && v.nq.on) && !(typeof Account !== 'undefined' && Account.user);
     v.nvGuestCls = guest ? 'om-nguest' : '';
+    return v;
+  };
+})();
+
+
+/* ---------- v52 · NOVA context chip when no game has been chosen yet ---------- */
+var NOGAME52_TXT = { it: 'Contesto: nessun gioco scelto', en: 'Context: no game chosen', es: 'Contexto: ningún juego elegido', fr: 'Contexte : aucun jeu choisi',
+  de: 'Kontext: kein Spiel gewählt', pt: 'Contexto: nenhum jogo escolhido', zh: '背景：尚未选择游戏', ja: 'コンテキスト：ゲーム未選択', ko: '맥락: 선택한 게임 없음' };
+Object.keys(NOGAME52_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, { novaKnowsNone: NOGAME52_TXT[l] }); });
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this);
+    if (v.ux && v.ux.novaKnows !== undefined && !String(v.ux.gameLine || '').trim()) v.ux.novaKnows = v.T.novaKnowsNone;
     return v;
   };
 })();
