@@ -1237,6 +1237,17 @@ body{margin:0;background:#07070B}
 @media (hover:hover) and (pointer:fine){.om-navi:hover .om-navtip{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}}
 .om-navi[aria-current="page"] .om-navtip{display:none}
 @media (prefers-reduced-motion:reduce){.om-navtip{transition:none;transform:translate(-50%,0)}}
+/* ---- v51: NOVA for guests · readable disclaimer, chat from the top, one sign-in box, no input bar ---- */
+.om-nguest .om-nhead{flex-wrap:wrap;row-gap:2px}
+.om-nguest .om-nhead-t{display:contents}
+.om-nguest .om-nhead-t h1{flex:1 1 0;min-width:0}
+.om-nguest .om-nmode{order:99;flex:1 0 100%;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35;padding-right:6px}
+.om-nguest .om-nquota,.om-nguest .om-nbar{display:none}
+.om-root .om-nguest{overflow-y:auto;overscroll-behavior:contain}
+.om-nguest > *{flex-shrink:0}
+.om-root .om-nguest .om-nchat{flex-grow:0!important;min-height:auto!important;overflow:visible;margin-bottom:auto;-webkit-mask-image:none;mask-image:none}
+.om-nguest .om-nnote{margin-bottom:10px;order:1}
+.om-nguest .om-nchat ~ div:not(.om-nnote):not(.om-nbar):not(.om-nquota){order:2}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -2032,7 +2043,7 @@ body{margin:0;background:#07070B}
 
 <!-- ================= NOVA: CHAT ================= -->
 <sc-if value="{{sc.novaChat}}" hint-placeholder-val="{{false}}">
-<div class="scr {{tabIn}}">
+<div class="scr {{tabIn}} {{nvGuestCls}}">
 <div class="om-brand om-brand-bar"><svg class="om-logo" aria-hidden="true" focusable="false" width="28" height="28" viewBox="250 250 524 524"><use href="#om-logo-sym"></use></svg><span class="om-brand-w">OFF<span>Mind</span></span></div>
 <div class="om-nhead">
 <span class="om-nhead-t"><h1>NOVA</h1><span class="om-nmode">{{nv.mode}}</span></span>
@@ -8947,6 +8958,18 @@ Object.keys(SES50_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] ||
       var del = v.modalConfirm;
       v.modalConfirm = function () { del(); self.toast(T.sesDeleted); };
     }
+    return v;
+  };
+})();
+
+
+/* ---------- v51 · NOVA chat: guest layout flag ---------- */
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    var v = origRV.call(this), s = this.state;
+    var guest = s.screen === 'nova' && !!(v.nq && v.nq.on) && !(typeof Account !== 'undefined' && Account.user);
+    v.nvGuestCls = guest ? 'om-nguest' : '';
     return v;
   };
 })();
