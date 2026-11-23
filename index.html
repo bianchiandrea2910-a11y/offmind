@@ -1227,6 +1227,16 @@ body{margin:0;background:#07070B}
 .om-msum-i + .om-msum-i{border-left:1px solid var(--line)}
 .om-msum dt{font-size:11px;font-weight:700;color:var(--tx2)}
 .om-msum dd{margin:0;font-family:'Unbounded',sans-serif;font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* ---- v49: navbar tooltip (hover, keyboard focus, long press) ---- */
+.om-navi{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.om-navtip{position:absolute;left:50%;bottom:calc(100% + 12px);transform:translate(-50%,4px);padding:6px 10px;border-radius:10px;white-space:nowrap;pointer-events:none;
+  background:rgba(20,12,38,.94);border:1px solid rgba(255,255,255,.16);color:#F4F1FF;font-size:12px;font-weight:800;letter-spacing:.01em;
+  box-shadow:0 8px 22px -8px rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity var(--d1) var(--e-out),transform var(--d1) var(--e-out),visibility 0s linear var(--d1);z-index:2}
+.om-root.light .om-navtip{background:rgba(255,255,255,.97);border-color:rgba(20,12,38,.12);color:#1B1430}
+.om-navi[data-tipon] .om-navtip,.om-navi:focus-visible .om-navtip{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
+@media (hover:hover) and (pointer:fine){.om-navi:hover .om-navtip{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}}
+.om-navi[aria-current="page"] .om-navtip{display:none}
+@media (prefers-reduced-motion:reduce){.om-navtip{transition:none;transform:translate(-50%,0)}}
 /* ---- voice mode: the same orb, bigger ---- */
 .om-root .om-vorb.om-iorb{width:200px;height:200px}
 .om-root .om-vorb.om-iorb i{inset:-16px}
@@ -2785,10 +2795,11 @@ body{margin:0;background:#07070B}
 <sc-if value="{{showNav}}" hint-placeholder-val="{{true}}">
 <nav aria-label="Main" class="om-nav om-float">
 <sc-for list="{{navItems}}" as="n" hint-placeholder-count="5">
-<button class="om-tap om-navi" onClick="{{n.go}}" aria-current="{{n.cur}}" style="color: {{n.color}}; font-weight: {{n.fw}}">
+<button class="om-tap om-navi" onClick="{{n.go}}" aria-label="{{n.l}}" aria-current="{{n.curAttr}}" data-tab="{{n.key}}" style="color: {{n.color}}; font-weight: {{n.fw}}">
 <sc-if value="{{n.isNova}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" class="om-navic nova"><span class="om-novaorb"></span></span></sc-if>
 <sc-if value="{{n.notNova}}" hint-placeholder-val="{{true}}"><span aria-hidden="true" class="om-navic"><svg class="om-i" width="20" height="20" viewBox="0 0 24 24"><path d="{{n.ic}}"></path></svg></span></sc-if>
-<span class="om-navl">{{n.l}}</span>
+<span class="om-navl" aria-hidden="true">{{n.l}}</span>
+<span class="om-navtip" id="{{n.tipId}}" role="tooltip" aria-hidden="true">{{n.l}}</span>
 </button>
 </sc-for>
 </nav>
@@ -8845,6 +8856,45 @@ Object.keys(SES48_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l] ||
       };
     }
     return v;
+  };
+})();
+
+
+/* ---------- v49 · navbar: names, aria-current only on the active tab, long-press tooltip ---------- */
+(function () {
+  var P = Component.prototype, origRV = P.renderVals, origMount = P.componentDidMount;
+  P.renderVals = function () {
+    var v = origRV.call(this);
+    if (v.navItems) v.navItems.forEach(function (n) { n.curAttr = n.on ? 'page' : undefined; n.tipId = 'om-navtip-' + n.key; });
+    return v;
+  };
+  var LP_MS = 450, SHOW_MS = 1400;
+  P.componentDidMount = function () {
+    var timer = null, hideT = null, btn = null, sx = 0, sy = 0;
+    function clear(b) { if (b) b.removeAttribute('data-tipon'); }
+    document.addEventListener('pointerdown', function (e) {
+      var b = e.target.closest && e.target.closest('.om-navi'); if (!b || e.pointerType === 'mouse') return;
+      clearTimeout(timer); btn = b; sx = e.clientX; sy = e.clientY;
+      timer = setTimeout(function () {
+        document.querySelectorAll('.om-navi[data-tipon]').forEach(function (x) { clear(x); });
+        b.setAttribute('data-tipon', ''); b.setAttribute('data-lp', '');
+        if (navigator.vibrate) try { navigator.vibrate(8); } catch (err) {}
+      }, LP_MS);
+    }, true);
+    document.addEventListener('pointermove', function (e) { if (btn && Math.abs(e.clientX - sx) + Math.abs(e.clientY - sy) > 12) { clearTimeout(timer); } }, true);
+    function release() {
+      clearTimeout(timer); var b = btn; btn = null; if (!b || !b.hasAttribute('data-tipon')) return;
+      clearTimeout(hideT); hideT = setTimeout(function () { clear(b); }, SHOW_MS);
+    }
+    document.addEventListener('pointerup', release, true);
+    document.addEventListener('pointercancel', release, true);
+    /* a long press shows the name only: the click that follows it does not switch tab */
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('.om-navi'); if (!b || !b.hasAttribute('data-lp')) return;
+      b.removeAttribute('data-lp'); e.preventDefault(); e.stopPropagation();
+    }, true);
+    document.addEventListener('contextmenu', function (e) { if (e.target.closest && e.target.closest('.om-navi')) e.preventDefault(); }, true);
+    if (origMount) return origMount.apply(this, arguments);
   };
 })();
 
