@@ -1577,7 +1577,7 @@ body{margin:0;background:#07070B}
 </div>
 <div class="om-prog-mini">
 <div class="om-mini16"><span aria-hidden="true" class="om-ring" style="--p: {{ux.goalPct}}; --c1: var(--ok); --c2: #12C99B; width: 40px; height: 40px; font-size: 11px">{{ux.goalFrac}}</span><span><span class="om-sl">{{home.goalL}}</span><span class="sr">{{ux.todayLine}}</span><span class="om-sd mute" aria-hidden="true">{{home.goalSub}}</span></span></div>
-<div class="om-mini16"><span aria-hidden="true" class="om-ring" style="--p: {{home.streakPct}}; --c1: #FF9A3D; --c2: #FF4D8D; width: 40px; height: 40px; font-size: 14px">{{streak}}</span><span><span class="om-sl">{{T.streakDays}}<span class="sr">: {{streak}}</span></span><span class="om-sd mute">{{home.streakSub}}</span></span></div>
+<div class="om-mini16"><span aria-hidden="true" class="om-ring" style="--p: {{home.streakPct}}; --c1: #FF9A3D; --c2: #FF4D8D; width: 40px; height: 40px; font-size: 14px">{{streak}}</span><span><span class="om-sl">{{pl53.streakL}}<span class="sr">: {{streak}}</span></span><span class="om-sd mute">{{home.streakSub}}</span></span></div>
 </div>
 </section>
 
@@ -2397,9 +2397,9 @@ body{margin:0;background:#07070B}
 </sc-if>
 
 <button class="om-tap card" onClick="{{toStats}}" aria-label="{{T.stats}}" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 14px 6px; text-align: center">
-<span style="display: flex; flex-direction: column; gap: 2px; border-right: 1px solid var(--line)"><span style="font-family: 'Unbounded', sans-serif; font-size: 19px; font-weight: 600">{{streak}}</span><span style="font-size: 11px; font-weight: 700; color: var(--tx2)">{{T.streakDays}}</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px; border-right: 1px solid var(--line)"><span style="font-family: 'Unbounded', sans-serif; font-size: 19px; font-weight: 600">{{minutesFmt}}</span><span style="font-size: 11px; font-weight: 700; color: var(--tx2)">{{T.minutes}}</span></span>
-<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Unbounded', sans-serif; font-size: 19px; font-weight: 600">{{doneCount}}</span><span style="font-size: 11px; font-weight: 700; color: var(--tx2)">{{T.doneEx}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px; border-right: 1px solid var(--line)"><span style="font-family: 'Unbounded', sans-serif; font-size: 19px; font-weight: 600">{{streak}}</span><span style="font-size: 11px; font-weight: 700; color: var(--tx2)">{{pl53.streakL}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px; border-right: 1px solid var(--line)"><span style="font-family: 'Unbounded', sans-serif; font-size: 19px; font-weight: 600">{{minutesFmt}}</span><span style="font-size: 11px; font-weight: 700; color: var(--tx2)">{{pl53.minL}}</span></span>
+<span style="display: flex; flex-direction: column; gap: 2px"><span style="font-family: 'Unbounded', sans-serif; font-size: 19px; font-weight: 600">{{doneCount}}</span><span style="font-size: 11px; font-weight: 700; color: var(--tx2)">{{pl53.doneL}}</span></span>
 </button>
 
 <sc-for list="{{ux.groups}}" as="g" hint-placeholder-count="3">
@@ -8990,6 +8990,80 @@ Object.keys(NOGAME52_TXT).forEach(function (l) { I18N[l] = Object.assign(I18N[l]
   P.renderVals = function () {
     var v = origRV.call(this);
     if (v.ux && v.ux.novaKnows !== undefined && !String(v.ux.gameLine || '').trim()) v.ux.novaKnows = v.T.novaKnowsNone;
+    return v;
+  };
+})();
+
+
+/* ---------- v53 · singular when a counter is exactly 1 ---------- */
+var PL53_ONE = {
+  it: { streakDays1: 'giorno di fila', minutes1: 'minuto', doneEx1: 'esercizio' },
+  en: { streakDays1: 'day streak', minutes1: 'minute', doneEx1: 'exercise' },
+  es: { streakDays1: 'día seguido', minutes1: 'minuto', doneEx1: 'ejercicio' },
+  fr: { streakDays1: 'jour d’affilée', minutes1: 'minute', doneEx1: 'exercice' },
+  de: { streakDays1: 'Tag in Folge', minutes1: 'Minute', doneEx1: 'Übung' },
+  pt: { streakDays1: 'dia seguido', minutes1: 'minuto', doneEx1: 'exercício' }
+};
+Object.keys(PL53_ONE).forEach(function (l) { I18N[l] = Object.assign(I18N[l] || {}, PL53_ONE[l]); });
+
+/* "1 <plural>" → "1 <singular>" inside sentences. Longer phrases first so agreement follows (esercizi completati). */
+var PL53_WORDS = {
+  it: { 'giorni di fila': 'giorno di fila', 'giorni consecutivi': 'giorno consecutivo', 'esercizi completati': 'esercizio completato',
+    'giorni': 'giorno', 'esercizi': 'esercizio', 'minuti': 'minuto', 'pause': 'pausa', 'salvati': 'salvato', 'attive': 'attiva',
+    'conversazioni': 'conversazione', 'punti': 'punto', 'volte': 'volta', 'rilevazioni': 'rilevazione', 'valutazioni': 'valutazione',
+    'sessioni': 'sessione', 'messaggi': 'messaggio' },
+  en: { 'exercises': 'exercise', 'minutes': 'minute', 'days': 'day', 'resets': 'reset', 'breaks': 'break', 'conversations': 'conversation',
+    'points': 'point', 'times': 'time', 'entries': 'entry', 'ratings': 'rating', 'sessions': 'session', 'messages': 'message', 'tokens': 'token' },
+  es: { 'ejercicios': 'ejercicio', 'minutos': 'minuto', 'días': 'día', 'pausas': 'pausa', 'conversaciones': 'conversación', 'puntos': 'punto',
+    'veces': 'vez', 'guardados': 'guardado', 'activas': 'activa', 'sesiones': 'sesión' },
+  pt: { 'exercícios': 'exercício', 'minutos': 'minuto', 'dias': 'dia', 'pausas': 'pausa', 'conversas': 'conversa', 'pontos': 'ponto',
+    'vezes': 'vez', 'sessões': 'sessão' },
+  fr: { 'exercices': 'exercice', 'jours': 'jour', 'pauses': 'pause', 'conversations': 'conversation', 'points': 'point', 'sessions': 'session' },
+  de: { 'übungen': 'übung', 'minuten': 'minute', 'tage': 'tag', 'pausen': 'pause', 'gespräche': 'gespräch', 'punkte': 'punkt' }
+};
+var PL53_LANG = 'it', PL53_RES = {};
+function pl53Re(l) {
+  if (PL53_RES[l] !== undefined) return PL53_RES[l];
+  var W = PL53_WORDS[l];
+  if (!W) return (PL53_RES[l] = null);
+  var keys = Object.keys(W).sort(function (a, b) { return b.length - a.length; }).map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); });
+  return (PL53_RES[l] = new RegExp('(^|[^\\d.,\\p{L}])1([\\s\\u00a0]+)(' + keys.join('|') + ')(?![\\p{L}\\d])', 'giu'));
+}
+function pl53(str, lang) {
+  var l = lang || PL53_LANG, W = PL53_WORDS[l], re = pl53Re(l);
+  if (!re || typeof str !== 'string' || str.indexOf('1') < 0) return str;
+  return str.replace(re, function (m, pre, sp, w) {
+    var one = W[w.toLowerCase()];
+    if (!one) return m;
+    if (w.charAt(0) !== w.charAt(0).toLowerCase()) one = one.charAt(0).toUpperCase() + one.slice(1);
+    return pre + '1' + sp + one;
+  });
+}
+fill = (function (orig) { return function (s, o) { return pl53(orig(s, o)); }; })(fill);
+
+/* stand-alone labels shown under / next to a separate number (Statistiche KPI tiles) */
+var PL53_LBL = {
+  'Minuti di allenamento': 'Minuto di allenamento', 'Minuti di esercizi': 'Minuto di esercizi', 'Esercizi completati': 'Esercizio completato',
+  'Giorni di fila': 'Giorno di fila', 'Giorni consecutivi': 'Giorno consecutivo',
+  'Exercise minutes': 'Exercise minute', 'Training minutes': 'Training minute', 'Exercises done': 'Exercise done', 'Check-ins': 'Check-in'
+};
+
+(function () {
+  var P = Component.prototype, origRV = P.renderVals;
+  P.renderVals = function () {
+    PL53_LANG = (this.state && this.state.lang) || PL53_LANG;     /* fill() below follows the language on screen */
+    var v = origRV.call(this), T = v.T || {};
+    var one = function (x) { return String(x).trim() === '1'; };
+    v.pl53 = {
+      streakL: one(v.streak) ? (T.streakDays1 || T.streakDays) : T.streakDays,
+      minL: one(v.minutesFmt) ? (T.minutes1 || T.minutes) : T.minutes,
+      doneL: one(v.doneCount) ? (T.doneEx1 || T.doneEx) : T.doneEx
+    };
+    if (v.st && Array.isArray(v.st.kpis)) v.st.kpis.forEach(function (k) { if (one(k.v) && PL53_LBL[k.l]) k.l = PL53_LBL[k.l]; });
+    if (Array.isArray(v.secTiles)) v.secTiles.forEach(function (t) {
+      if (typeof t.count === 'string' && /^1 /.test(t.count) && T.doneEx1) t.count = t.count.replace(T.doneEx, T.doneEx1);
+    });
+    if (v.cx && typeof v.cx.streakL === 'string') v.cx.streakL = pl53(v.cx.streakL);
     return v;
   };
 })();
