@@ -1234,7 +1234,7 @@ body{margin:0;background:#07070B}
   box-shadow:0 8px 22px -8px rgba(0,0,0,.6);opacity:0;visibility:hidden;transition:opacity var(--d1) var(--e-out),transform var(--d1) var(--e-out),visibility 0s linear var(--d1);z-index:2}
 .om-root.light .om-navtip{background:rgba(255,255,255,.97);border-color:rgba(20,12,38,.12);color:#1B1430}
 .om-navi[data-tipon] .om-navtip,.om-navi:focus-visible .om-navtip{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
-@media (hover:hover) and (pointer:fine){.om-navi:hover .om-navtip{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}}
+.om-navi[data-tiphov] .om-navtip{opacity:1;visibility:visible;transform:translate(-50%,0);transition-delay:0s}
 .om-navi[aria-current="page"] .om-navtip{display:none}
 @media (prefers-reduced-motion:reduce){.om-navtip{transition:none;transform:translate(-50%,0)}}
 /* ---- v51: NOVA for guests · readable disclaimer, chat from the top, one sign-in box, no input bar ---- */
@@ -9065,6 +9065,58 @@ var PL53_LBL = {
     });
     if (v.cx && typeof v.cx.streakL === 'string') v.cx.streakL = pl53(v.cx.streakL);
     return v;
+  };
+})();
+
+
+/* ---------- v54 · navbar tooltip for the mouse: shown only after an intentional hover ---------- */
+(function () {
+  var P = Component.prototype, origMount = P.componentDidMount, origDU = P.componentDidUpdate;
+  var TIP_DELAY = 500, TIP_HOLD = 1600, MOVE_PX = 3;
+  var lastX = null, lastY = null, armed = false, cur = null, shown = null, dwellT = null, holdT = null, spent = null;
+  function hide() {
+    clearTimeout(dwellT); clearTimeout(holdT); dwellT = holdT = null;
+    if (shown) shown.removeAttribute('data-tiphov');
+    shown = null;
+  }
+  function disarm() { hide(); armed = false; cur = null; spent = null; }
+  function schedule(b) {
+    clearTimeout(dwellT);
+    dwellT = setTimeout(function () {
+      dwellT = null;
+      if (!armed || cur !== b || !b.isConnected || b.getAttribute('aria-current') === 'page' || spent === b) return;
+      document.querySelectorAll('.om-navi[data-tiphov]').forEach(function (x) { x.removeAttribute('data-tiphov'); });
+      b.setAttribute('data-tiphov', ''); shown = b;
+      holdT = setTimeout(function () { if (shown === b) { spent = b; hide(); } }, TIP_HOLD);   /* never stays over the page */
+    }, TIP_DELAY);
+  }
+  function onMove(e) {
+    if (e.pointerType && e.pointerType !== 'mouse') return;
+    var moved = lastX !== null && (Math.abs(e.clientX - lastX) + Math.abs(e.clientY - lastY) >= MOVE_PX);
+    lastX = e.clientX; lastY = e.clientY;
+    if (moved) armed = true;                                   /* layout shifts and synthetic moves keep the same point */
+    var b = e.target && e.target.closest ? e.target.closest('.om-navi') : null;
+    if (b !== cur) { hide(); cur = b; spent = null; }
+    if (b && armed && moved && !shown && !dwellT && spent !== b) schedule(b);
+  }
+  P.navTipReset = disarm;
+  P.componentDidMount = function () {
+    document.addEventListener('pointermove', onMove, true);
+    document.addEventListener('pointerout', function (e) {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      var to = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('.om-navi') : null;
+      if (!to) { hide(); cur = null; spent = null; }
+    }, true);
+    ['pointerdown', 'click', 'wheel', 'keydown'].forEach(function (t) { document.addEventListener(t, disarm, true); });
+    document.addEventListener('scroll', disarm, true);
+    window.addEventListener('blur', disarm);
+    return origMount ? origMount.apply(this, arguments) : undefined;
+  };
+  P.componentDidUpdate = function (pp, ps) {
+    var r = origDU ? origDU.apply(this, arguments) : undefined;
+    var s = this.state;
+    if (ps && (ps.screen !== s.screen || ps.stack !== s.stack)) disarm();   /* after a screen change: wait for a new move */
+    return r;
   };
 })();
 
